@@ -9,7 +9,7 @@ services:
 	client:
 		image:"udp-socket-client"
 		build:
-			context:./udp-socket-client/sources/
+			context: ./udp-socket-client/sources/
 			dockerfile:Dockerfile
 		container name: udp-socket-client
 		environment: 
