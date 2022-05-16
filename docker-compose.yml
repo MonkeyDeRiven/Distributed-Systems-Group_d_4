@@ -6,7 +6,7 @@ volumes:
     # external: true
 
 services:
-  ubuntu:
+  Sensor1:
     image: ubuntu
     ## Uncomment if needed
     # ports:
@@ -15,7 +15,7 @@ services:
       - reportportal-data:/data
     restart: always
 
-  ubuntu:
+  IoTGateway:
     image: ubuntu
     ## Uncomment if needed
     # ports:
