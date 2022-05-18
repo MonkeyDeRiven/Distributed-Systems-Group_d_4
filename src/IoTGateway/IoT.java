@@ -24,7 +24,16 @@ class IoT
     static DatagramSocket clientSocket = null;
     static String messageTypeForSensor = "post";
     static final int sensorPort = 4242;
-    static final String GatewayIPAdr = "172.20.0.15";
+    static final String GatewayIPAdr;
+
+    static {
+        try {
+            GatewayIPAdr = InetAddress.getByName("iotgateway").toString();
+        } catch (UnknownHostException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     IoT() throws UnknownHostException {
     }
     public static void requestAllIpsFromSensor() throws SocketException, UnknownHostException {
