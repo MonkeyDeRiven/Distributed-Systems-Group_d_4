@@ -70,6 +70,8 @@ class IoT
         clientSocket.send(sendPacket);
         System.out.println("Packet was send to Sensor: " + dstIPAdr);
         DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+        //in case of packet loss ... skip recieve after timeout
+        clientSocket.setSoTimeout(1000);
         clientSocket.receive(receivePacket);
         String modifiedSentence = new String(receivePacket.getData());
         System.out.println("Data from Sensor:" + modifiedSentence);
