@@ -10,7 +10,6 @@ import static java.lang.Thread.sleep;
 class IoT
 {
     static InetAddress[] allSensorIps;
-    static int sensorCount = Integer.parseInt(System.getenv("numberOfSensors"));
 
     static {
         try {
@@ -40,8 +39,8 @@ class IoT
         try {
             int whichPortsNow = 0;
             while(true) {
-                for(int i = 0; i<sensorCount; i++) {
-                    sendDataToSensors(InetAddress.getByName("sensor" + i));
+                for(int i = 0; i<4; i++) {
+                    sendDataToSensors(allSensorIps[i]);
                 }
                 Thread.sleep(10000);
             }
@@ -71,6 +70,7 @@ class IoT
         clientSocket.send(sendPacket);
         System.out.println("Packet was send to Sensor: " + dstIPAdr);
         DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+        //in case of packet loss ... skip recieve after timeout
         clientSocket.setSoTimeout(1000);
         clientSocket.receive(receivePacket);
         String modifiedSentence = new String(receivePacket.getData());
