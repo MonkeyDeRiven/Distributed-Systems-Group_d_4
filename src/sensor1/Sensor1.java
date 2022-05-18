@@ -68,13 +68,6 @@ public class Sensor1{
     }
 
      public static void main(String args[]){
-
-         System.out.println("NOICE");
-         try {
-             System.out.println(InetAddress.getByName("localhost"));
-         }catch(UnknownHostException e){
-             System.out.println(e.getMessage());
-         }
         try{
             openSocket();
         }

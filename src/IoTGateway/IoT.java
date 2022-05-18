@@ -23,7 +23,7 @@ class IoT
     static DatagramSocket clientSocket = null;
     static String messageTypeForSensor = "post";
     static final int sensorPort = 4242;
-    static final String GatewayIPAdr = "172.17.0.15";
+    static final String GatewayIPAdr = "172.20.0.15";
     IoT() throws UnknownHostException {
     }
     public static void requestAllIpsFromSensor() throws SocketException, UnknownHostException {
@@ -42,6 +42,7 @@ class IoT
                 for(int i = 0; i<4; i++) {
                     sendDataToSensors(allSensorIps[i]);
                 }
+                Thread.sleep(10000);
             }
 
         } catch (SocketException e) {
@@ -67,12 +68,10 @@ class IoT
         DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, dstIPAdr, sensorPort);
 
         clientSocket.send(sendPacket);
-        System.out.println("Packet was send to: " + dstIPAdr);
+        System.out.println("Packet was send to Sensor: " + dstIPAdr);
         DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
         clientSocket.receive(receivePacket);
         String modifiedSentence = new String(receivePacket.getData());
-        System.out.println("FROM SERVER:" + modifiedSentence);
-
-        Thread.sleep(10000);
+        System.out.println("Data from Sensor:" + modifiedSentence);
     }
 }
