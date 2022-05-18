@@ -7,11 +7,8 @@ volumes:
 
 
 services:
-  sensor1:
-    networks:
-      static_network:
-        ipv4_address: 172.20.0.2
-    container_name: Sensor_1
+  sensor0:
+    container_name: Sensor_0
     build: ./src/sensor1
 
     ## Uncomment if needed
@@ -20,10 +17,16 @@ services:
     volumes:
       - reportportal-data:/data
     restart: always
+  sensor1:
+    container_name: Sensor_1
+    build: ./src/sensor1
+    ## Uncomment if needed
+    # ports:
+    #   - "6969:6969"
+    volumes:
+      - reportportal-data:/data
+    restart: always
   sensor2:
-    networks:
-      static_network:
-        ipv4_address: 172.20.0.3
     container_name: Sensor_2
     build: ./src/sensor1
     ## Uncomment if needed
@@ -33,9 +36,6 @@ services:
       - reportportal-data:/data
     restart: always
   sensor3:
-    networks:
-      static_network:
-        ipv4_address: 172.20.0.4
     container_name: Sensor_3
     build: ./src/sensor1
     ## Uncomment if needed
@@ -44,36 +44,15 @@ services:
     volumes:
       - reportportal-data:/data
     restart: always
-  sensor4:
-    networks:
-      static_network:
-        ipv4_address: 172.20.0.5
-    container_name: Sensor_4
-    build: ./src/sensor1
-    ## Uncomment if needed
-    # ports:
-    #   - "6969:6969"
-    volumes:
-      - reportportal-data:/data
-    restart: always
   iotgateway:
-    networks:
-      static_network:
-        ipv4_address: 172.20.0.15
     container_name: IoT_Gateway
+
     build: ./src/IoTGateway
     ## Uncomment if needed
     # ports:
     #   - "81:81"
+    environment:
+      numberOfSensors: 4
     volumes:
       - reportportal-data:/data
     restart: always
-
-networks:
-  static_network:
-    ipam:
-      config:
-        - subnet: 172.20.0.0/16
-          ip_range: 172.20.0.0/24
-          gateway: 172.20.0.255
-
