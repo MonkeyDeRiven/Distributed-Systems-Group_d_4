@@ -35,6 +35,7 @@ public class Sensor1{
      public static void receiveDataFunc() throws IOException {
          System.out.println("data will be recieved");
          DatagramPacket receivedPacket =  new DatagramPacket(rcvData, rcvData.length);
+         socket.setSoTimeout(1000);
          socket.receive(receivedPacket);
          ipAdr = receivedPacket.getAddress();
          metaData = new String(receivedPacket.getData());

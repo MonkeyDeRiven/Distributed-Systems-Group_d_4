@@ -8,7 +8,7 @@ volumes:
 
 services:
   sensor0:
-    container_name: Sensor_0
+    container_name: Sensor0
     build: ./src/sensor1
 
     ## Uncomment if needed
@@ -18,7 +18,7 @@ services:
       - reportportal-data:/data
     restart: always
   sensor1:
-    container_name: Sensor_1
+    container_name: Sensor1
     build: ./src/sensor1
     ## Uncomment if needed
     # ports:
@@ -27,7 +27,7 @@ services:
       - reportportal-data:/data
     restart: always
   sensor2:
-    container_name: Sensor_2
+    container_name: Sensor2
     build: ./src/sensor1
     ## Uncomment if needed
     # ports:
@@ -36,7 +36,7 @@ services:
       - reportportal-data:/data
     restart: always
   sensor3:
-    container_name: Sensor_3
+    container_name: Sensor3
     build: ./src/sensor1
     ## Uncomment if needed
     # ports:

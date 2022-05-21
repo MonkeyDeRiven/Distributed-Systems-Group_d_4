@@ -28,7 +28,7 @@ class IoT
 
     static {
         try {
-            GatewayIPAdr = InetAddress.getByName("iotgateway").toString();
+            GatewayIPAdr = InetAddress.getByName("iotgateway").toString().split("/")[1];
         } catch (UnknownHostException e) {
             throw new RuntimeException(e);
         }
@@ -76,6 +76,7 @@ class IoT
         System.out.println(sensorIP);
 
         DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, dstIPAdr, sensorPort);
+
 
         clientSocket.send(sendPacket);
         System.out.println("Packet was send to Sensor: " + dstIPAdr);
