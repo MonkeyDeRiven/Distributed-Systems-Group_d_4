@@ -69,7 +69,7 @@ class IoT
         byte[] receiveData = new byte[512];
 
         String sentence =  GatewayIPAdr + "," + dstIPAdr + "," + "6969" + "," + String.valueOf(messageId++) + "," + messageTypeForSensor;
-
+        System.out.println("GatewayIP: " + GatewayIPAdr);
         sendData = sentence.getBytes();
         InetAddress sensorIP = InetAddress.getByName(GatewayIPAdr);
 
