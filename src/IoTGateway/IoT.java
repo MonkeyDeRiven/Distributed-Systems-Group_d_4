@@ -1,5 +1,7 @@
 package IoTGateway;
 
+import Service_Anbieter.Server;
+
 import java.io.*;
 import java.net.*;
 
@@ -44,6 +46,15 @@ class IoT
         InetAddress hostIp = InetAddress.getLocalHost();
         System.out.println(hostIp + "\n\n\n\n\n");*/
     }
+
+    private static void sendDataToServer(DatagramPacket receivedData) throws IOException {
+        InetAddress serverAdr = InetAddress.getByName("Server");
+        Socket gatewaySocket = new Socket(serverAdr, 1337);
+
+        DataOutputStream outToServer = new DataOutputStream(gatewaySocket.getOutputStream());
+        outToServer.write(receivedData.getData());
+
+    }
     public static void main(String args[]) throws Exception {
         clientSocket = new DatagramSocket(6969);
         try {
@@ -83,7 +94,25 @@ class IoT
         DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
         clientSocket.setSoTimeout(1000);
         clientSocket.receive(receivePacket);
+        sendDataToServer(receivePacket);
+
         String modifiedSentence = new String(receivePacket.getData());
         System.out.println("Data from Sensor:" + modifiedSentence);
     }
+
+
 }
+
+/*
+    Thread serverThread = new Thread(){
+        //Code for TCP Client
+        public void run(){
+            try {
+                sendDataToServer();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    };
+
+        serverThread.run();*/

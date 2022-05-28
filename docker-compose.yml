@@ -56,3 +56,11 @@ services:
     volumes:
       - reportportal-data:/data
     restart: always
+
+  server:
+    container_name: Service_Anbieter
+
+    build: ./src/Server
+    volumes:
+      - reportportal-data:/data
+    restart: always
