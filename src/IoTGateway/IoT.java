@@ -10,6 +10,7 @@ import static java.lang.Thread.sleep;
 class IoT
 {
     static InetAddress[] allSensorIps;
+    static int sensorCount = Integer.parseInt(System.getenv("numberOfSensors"));
 
     static {
         try {
@@ -23,7 +24,16 @@ class IoT
     static DatagramSocket clientSocket = null;
     static String messageTypeForSensor = "post";
     static final int sensorPort = 4242;
-    static final String GatewayIPAdr = "172.20.0.15";
+    static final String GatewayIPAdr;
+
+    static {
+        try {
+            GatewayIPAdr = InetAddress.getByName("iotgateway").toString().split("/")[1];
+        } catch (UnknownHostException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     IoT() throws UnknownHostException {
     }
     public static void requestAllIpsFromSensor() throws SocketException, UnknownHostException {
@@ -39,8 +49,8 @@ class IoT
         try {
             int whichPortsNow = 0;
             while(true) {
-                for(int i = 0; i<4; i++) {
-                    sendDataToSensors(allSensorIps[i]);
+                for(int i = 0; i<sensorCount; i++) {
+                    sendDataToSensors(InetAddress.getByName("sensor" + i));
                 }
                 Thread.sleep(10000);
             }
@@ -59,7 +69,7 @@ class IoT
         byte[] receiveData = new byte[512];
 
         String sentence =  GatewayIPAdr + "," + dstIPAdr + "," + "6969" + "," + String.valueOf(messageId++) + "," + messageTypeForSensor;
-
+        System.out.println("GatewayIP: " + GatewayIPAdr);
         sendData = sentence.getBytes();
         InetAddress sensorIP = InetAddress.getByName(GatewayIPAdr);
 
@@ -70,7 +80,6 @@ class IoT
         clientSocket.send(sendPacket);
         System.out.println("Packet was send to Sensor: " + dstIPAdr);
         DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
-        //in case of packet loss ... skip recieve after timeout
         clientSocket.setSoTimeout(1000);
         clientSocket.receive(receivePacket);
         String modifiedSentence = new String(receivePacket.getData());
