@@ -60,7 +60,7 @@ services:
   server:
     container_name: Service_Anbieter
 
-    build: ./src/Server
+    build: ./src/Service_Anbieter
     volumes:
       - reportportal-data:/data
     restart: always
