@@ -1,6 +1,6 @@
 package IoTGateway;
 
-import Service_Anbieter.Server;
+
 
 import java.io.*;
 import java.net.*;
