@@ -3,6 +3,9 @@ package sensor1;
 import java.io.*;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
 import java.util.Random;
 
 public class Sensor1{
@@ -35,7 +38,7 @@ public class Sensor1{
      public static void receiveDataFunc() throws IOException {
          System.out.println("data will be recieved");
          DatagramPacket receivedPacket =  new DatagramPacket(rcvData, rcvData.length);
-         socket.setSoTimeout(1000);
+
          socket.receive(receivedPacket);
          ipAdr = receivedPacket.getAddress();
          metaData = new String(receivedPacket.getData());
@@ -55,8 +58,10 @@ public class Sensor1{
      }
     public static void sendDataFunc() throws IOException {
         System.out.println("data will be send");
+
+        String timeStamp = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss", Locale.GERMANY).format(new java.util.Date());
          String sentence = srcAdr.toUpperCase() + "," + dstAdr.toUpperCase() + "," + String.valueOf(port) + "," +
-                 String.valueOf(messageID) + "," + humidity;
+                 String.valueOf(messageID) + "," + humidity + "," + timeStamp + ",";
          sendData = sentence.getBytes();
 
          DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, ipAdr, Integer.parseInt(port));
