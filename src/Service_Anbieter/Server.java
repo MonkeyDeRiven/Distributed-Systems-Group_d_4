@@ -11,7 +11,6 @@ public class Server {
     public static void main(String args[]) throws IOException {
         ServerSocket weclomeSocket = new ServerSocket(1337);
         byte[] buffer = new byte[2];
-        boolean messageSizeIsReached = false;
         String sentence = new String("");
         try (FileWriter myWriter = new FileWriter("StoredData.txt")) {
 
@@ -32,8 +31,20 @@ public class Server {
 
                     if (sentence.length() > 2 + sizeOfMessage) {
                         sentence = sentence.substring(2);
-                        myWriter.write(sentence + "\n");
+                        String[] sentenceArray = sentence.substring(0, sizeOfMessage).split(",");
+                        String comepleteMessage = "";
+                        String messageID = "";
+                        for(int i = 4; i<sentenceArray.length; i++){
+                            comepleteMessage += sentenceArray[i];
+                            if(i == 3)
+                                messageID = sentenceArray[i];
+                        }
+                        myWriter.write(comepleteMessage + "\n");
+                        System.out.println(comepleteMessage +"\n");
                         sentence = sentence.substring(sizeOfMessage);
+
+                        String ack = messageID.length() + messageID;
+                        outToClient.write(ack.getBytes());
                     }
             }
         }
