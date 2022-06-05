@@ -131,10 +131,12 @@ class IoT
 
         long timeStartTrip = System.currentTimeMillis();
         sendDataToServer(sendPacket);
-        long timeEndTrip = System.currentTimeMillis();
-        long RTT = timeEndTrip - timeStartTrip;
-        System.out.println("Round Trip Time: " + RTT + "ms\n");
-        ++rttCounter;
+        if(rttCounter<5){
+            long timeEndTrip = System.currentTimeMillis();
+            long RTT = timeEndTrip - timeStartTrip;
+            System.out.println("Round Trip Time: " + RTT + "ms\n");
+            ++rttCounter;
+        }
     }
 
 
