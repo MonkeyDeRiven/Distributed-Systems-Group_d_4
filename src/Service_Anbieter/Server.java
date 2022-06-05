@@ -43,8 +43,6 @@ public class Server {
                         System.out.println(comepleteMessage +"\n");
                         sentence = sentence.substring(sizeOfMessage);
 
-                        String ack = messageID.length() + messageID;
-                        outToClient.write(ack.getBytes());
                     }
             }
         }

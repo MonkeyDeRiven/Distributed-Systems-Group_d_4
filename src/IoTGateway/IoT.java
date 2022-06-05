@@ -62,14 +62,6 @@ class IoT
 
     IoT() throws UnknownHostException {
     }
-    public static void requestAllIpsFromSensor() throws SocketException, UnknownHostException {
-       /* byte[] sendData = new byte[128];
-        byte[] receiveData = new byte[128];
-        clientSocket = new DatagramSocket(6969);
-
-        InetAddress hostIp = InetAddress.getLocalHost();
-        System.out.println(hostIp + "\n\n\n\n\n");*/
-    }
 
     private static void sendDataToServer(DatagramPacket receivedData) throws IOException {
 
@@ -138,49 +130,12 @@ class IoT
 
         long timeStartTrip = System.currentTimeMillis();
         sendDataToServer(sendPacket);
-        receiveACK();
         long timeEndTrip = System.currentTimeMillis();
-
         long RTT = timeEndTrip - timeStartTrip;
         System.out.println("Round Trip Time: " + RTT + "ms\n");
     }
 
-    private static void receiveACK() throws IOException {
 
-        byte[] buffer = new byte[1];
-
-        while (true) {
-            BufferedReader inputFromClient = new BufferedReader(new InputStreamReader(gatewaySocket.getInputStream()));
-            DataOutputStream outToClient = new DataOutputStream(gatewaySocket.getOutputStream());
-
-            sentence += inputFromClient.readLine();
-            if (sentence.length() < 2) {
-                continue;
-            }
-            String sizeOfSentenceString = "" + sentence.charAt(0) + sentence.charAt(1);
-
-            buffer = sizeOfSentenceString.getBytes();
-            ByteBuffer wrapped = ByteBuffer.wrap(buffer);
-            short sizeOfMessage = wrapped.getShort();
-
-            if (sentence.length() > 2 + sizeOfMessage) {
-                sentence = sentence.substring(2);
-                String[] sentenceArray = sentence.substring(0, sizeOfMessage).split(",");
-                String comepleteMessage = "";
-                String messageID = "";
-                for(int i = 4; i<sentenceArray.length; i++){
-                    comepleteMessage += sentenceArray[i];
-                    if(i == 3)
-                        messageID = sentenceArray[i];
-                }
-                sentence = sentence.substring(sizeOfMessage);
-            }
-        }
-
-
-
-
-    }
 
     private static String getTCPHeader() throws UnknownHostException {
         String sourceIP = InetAddress.getByName("iotgateway").toString().split("/")[1];
@@ -191,22 +146,4 @@ class IoT
         String header = destinationIP + "," + sourceIP + "," +  port + "," + messageID + "," + "HTTP";
         return header;
     }
-
-
-
-
 }
-
-/*
-    Thread serverThread = new Thread(){
-        //Code for TCP Client
-        public void run(){
-            try {
-                sendDataToServer();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    };
-
-        serverThread.run();*/
