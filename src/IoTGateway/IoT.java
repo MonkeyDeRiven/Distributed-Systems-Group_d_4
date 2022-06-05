@@ -77,7 +77,7 @@ class IoT
             int whichPortsNow = 0;
             while(true) {
                 for(int i = 0; i<sensorCount; i++) {
-                    sendDataToSensors(InetAddress.getByName("sensor" + i), rttCounter++);
+                    sendDataToSensors(InetAddress.getByName("sensor" + i), rttCounter);
                 }
                 Thread.sleep(10000);
             }
@@ -134,6 +134,7 @@ class IoT
         long timeEndTrip = System.currentTimeMillis();
         long RTT = timeEndTrip - timeStartTrip;
         System.out.println("Round Trip Time: " + RTT + "ms\n");
+        ++rttCounter;
     }
 
 
