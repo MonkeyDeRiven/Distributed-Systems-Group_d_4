@@ -71,12 +71,13 @@ class IoT
 
     }
     public static void main(String args[]) throws Exception {
+        int rttCounter = 0;
         clientSocket = new DatagramSocket(6969);
         try {
             int whichPortsNow = 0;
             while(true) {
                 for(int i = 0; i<sensorCount; i++) {
-                    sendDataToSensors(InetAddress.getByName("sensor" + i));
+                    sendDataToSensors(InetAddress.getByName("sensor" + i), rttCounter++);
                 }
                 Thread.sleep(10000);
             }
@@ -90,7 +91,7 @@ class IoT
         clientSocket.close();
     }
 
-    private static void sendDataToSensors(InetAddress dstIPAdr) throws IOException, InterruptedException {
+    private static void sendDataToSensors(InetAddress dstIPAdr, int rttCounter) throws IOException, InterruptedException {
         byte[] sendData = new byte[512];
         byte[] receiveData = new byte[512];
 
