@@ -12,6 +12,7 @@ import static java.lang.Thread.sleep;
 //TimeUnit.SECONDS.sleep(1);
 class IoT
 {
+    static int rttCounter = 0;
    static InetAddress serverAdr;
 
     static {
@@ -70,8 +71,12 @@ class IoT
         outToServer.write(receivedData.getData());
 
     }
+
+    public static void incrRTT(){
+        rttCounter = rttCounter + 1;
+    }
     public static void main(String args[]) throws Exception {
-        int rttCounter = 0;
+
         clientSocket = new DatagramSocket(6969);
         try {
             int whichPortsNow = 0;
@@ -91,14 +96,13 @@ class IoT
         clientSocket.close();
     }
 
-    private static void sendDataToSensors(InetAddress dstIPAdr, int rttCounter) throws IOException, InterruptedException {
+    private static synchronized void  sendDataToSensors(InetAddress dstIPAdr, int rttCounter) throws IOException, InterruptedException {
         byte[] sendData = new byte[512];
         byte[] receiveData = new byte[512];
 
         String sentence =  GatewayIPAdr + "," + dstIPAdr + "," + "6969" + "," + String.valueOf(messageId++) + "," + messageTypeForSensor + ",";
 
         sendData = sentence.getBytes();
-        InetAddress sensorIP = InetAddress.getByName(GatewayIPAdr);
         DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, dstIPAdr, sensorPort);
 
 
@@ -134,9 +138,9 @@ class IoT
         if(rttCounter<5){
             long timeEndTrip = System.currentTimeMillis();
             long RTT = timeEndTrip - timeStartTrip;
-            System.out.println("Round Trip Time: " + RTT + "ms\n");
-            ++rttCounter;
+            System.out.println("Round Trip Time: " + RTT + "ms\n\n" + rttCounter + " \n");
         }
+        incrRTT();
     }
 
 
