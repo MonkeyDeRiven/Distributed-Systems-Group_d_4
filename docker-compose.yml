@@ -58,7 +58,7 @@ services:
     restart: always
 
   server:
-    container_name: Service_Anbieter
+    container_name: server
 
     build: ./src/Service_Anbieter
     volumes:

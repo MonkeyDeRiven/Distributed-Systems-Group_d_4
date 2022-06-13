@@ -10,10 +10,11 @@ import static java.lang.Thread.sleep;
 
 
 //TimeUnit.SECONDS.sleep(1);
-class IoT
-{
+class IoT {
+    int serverPort = 1337;
+
     static int rttCounter = 0;
-   static InetAddress serverAdr;
+    static InetAddress serverAdr;
 
     static {
         try {
@@ -23,26 +24,9 @@ class IoT
         }
     }
 
-    static Socket gatewaySocket;
 
-    static {
-        try {
-            gatewaySocket = new Socket(serverAdr, 1337);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    static InetAddress[] allSensorIps;
     static int sensorCount = Integer.parseInt(System.getenv("numberOfSensors"));
 
-    static {
-        try {
-            allSensorIps = new InetAddress[]{InetAddress.getByName("172.20.0.2"),InetAddress.getByName("172.20.0.3"),InetAddress.getByName("172.20.0.4"),InetAddress.getByName("172.20.0.5")};
-        } catch (UnknownHostException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     static int messageId = 0;
     static DatagramSocket clientSocket = null;
@@ -50,7 +34,7 @@ class IoT
     static final int sensorPort = 4242;
     static final String GatewayIPAdr;
     static int messageIDForTCP = 0;
-    static String sentence ="" ;
+    static String sentence = "";
 
 
     static {
@@ -64,25 +48,22 @@ class IoT
     IoT() throws UnknownHostException {
     }
 
-    private static void sendDataToServer(DatagramPacket receivedData) throws IOException {
 
-
-        DataOutputStream outToServer = new DataOutputStream(gatewaySocket.getOutputStream());
-        outToServer.write(receivedData.getData());
-
-    }
-
-    public static void incrRTT(){
+    public static void incrRTT() {
         rttCounter = rttCounter + 1;
     }
+
     public static void main(String args[]) throws Exception {
+        int serverPort = 1337;
+        ServerSocket serverSocket = new ServerSocket(serverPort);
+        serverSocket.setSoTimeout(10000);
 
         clientSocket = new DatagramSocket(6969);
         try {
             int whichPortsNow = 0;
-            while(true) {
-                for(int i = 0; i<sensorCount; i++) {
-                    sendDataToSensors(InetAddress.getByName("sensor" + i), rttCounter);
+            while (true) {
+                for (int i = 0; i < sensorCount; i++) {
+                    sendDataToSensors(InetAddress.getByName("sensor" + i), rttCounter, serverSocket);
                 }
                 Thread.sleep(10000);
             }
@@ -96,11 +77,11 @@ class IoT
         clientSocket.close();
     }
 
-    private static synchronized void  sendDataToSensors(InetAddress dstIPAdr, int rttCounter) throws IOException, InterruptedException {
+    private static synchronized void sendDataToSensors(InetAddress dstIPAdr, int rttCounter, ServerSocket serverSocket) throws IOException, InterruptedException {
         byte[] sendData = new byte[512];
         byte[] receiveData = new byte[512];
 
-        String sentence =  GatewayIPAdr + "," + dstIPAdr + "," + "6969" + "," + String.valueOf(messageId++) + "," + messageTypeForSensor + ",";
+        String sentence = GatewayIPAdr + "," + dstIPAdr + "," + "6969" + "," + String.valueOf(messageId++) + "," + messageTypeForSensor + ",";
 
         sendData = sentence.getBytes();
         DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, dstIPAdr, sensorPort);
@@ -116,33 +97,40 @@ class IoT
         String[] modifiedSentenceArr = modifiedSentence.split(",");
         modifiedSentence = "";
 
-        for(int i = 0; i<modifiedSentenceArr.length-1; i++)
+        for (int i = 0; i < modifiedSentenceArr.length - 1; i++)
             modifiedSentence = modifiedSentence + modifiedSentenceArr[i] + ",";
 
-       System.out.println("Data from Sensor:" + modifiedSentence);
+        System.out.println("Data from Sensor:" + modifiedSentence);
 
 
         String receivePacketString = new String(receivePacket.getData());
         String[] messageArray = receivePacketString.split(",");
         String completeMessage = "";
 
-        for(int i = 4; i<messageArray.length-1; i++){
+        for (int i = 4; i < messageArray.length - 1; i++) {
             completeMessage += messageArray[i] + ",";
         }
 
-        completeMessage = getTCPHeader() + "," + completeMessage;
-        sendPacket = new DatagramPacket(completeMessage.getBytes(), completeMessage.getBytes().length);
 
-        long timeStartTrip = System.currentTimeMillis();
-        sendDataToServer(sendPacket);
-        if(rttCounter<5){
-            long timeEndTrip = System.currentTimeMillis();
-            long RTT = timeEndTrip - timeStartTrip;
-            System.out.println("Round Trip Time: " + RTT + "ms\n\n" + rttCounter + " \n");
-        }
-        incrRTT();
+
+            try {
+                System.out.println("Waiting for client on port " + serverSocket.getLocalPort() + "...");
+
+                Socket server = serverSocket.accept();
+                System.out.println("Just connected to " + server.getRemoteSocketAddress());
+
+                PrintWriter toClient =
+                        new PrintWriter(server.getOutputStream(), true);
+                BufferedReader fromClient =
+                        new BufferedReader(
+                                new InputStreamReader(server.getInputStream()));
+                String line = fromClient.readLine();
+                System.out.println("Server received: " + line);
+                toClient.println(completeMessage + "");
+            }
+            catch(Exception e) {
+            }
     }
-
 
 
     private static String getTCPHeader() throws UnknownHostException {

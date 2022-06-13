@@ -1,51 +1,42 @@
 package Service_Anbieter;
-
 import java.io.*;
-import java.math.BigInteger;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.nio.ByteBuffer;
+import java.net.*;
 
 public class Server {
+    public void run() {
+        try {
+            int serverPort = 1337;
+            InetAddress host = InetAddress.getByName("iotgateway");
+            System.out.println("Connecting to server on port " + serverPort);
 
-    public static void main(String args[]) throws IOException {
-        ServerSocket weclomeSocket = new ServerSocket(1337);
-        byte[] buffer = new byte[2];
-        String sentence = new String("");
-        try (FileWriter myWriter = new FileWriter("StoredData.txt")) {
-
-            while (true) {
-                Socket connectionSocket = weclomeSocket.accept();
-                BufferedReader inputFromClient = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
-                DataOutputStream outToClient = new DataOutputStream(connectionSocket.getOutputStream());
-
-                sentence += inputFromClient.readLine();
-                if (sentence.length() < 2) {
-                    continue;
-                }
-                    String sizeOfSentenceString = "" + sentence.charAt(0) + sentence.charAt(1);
-
-                    buffer = sizeOfSentenceString.getBytes();
-                    ByteBuffer wrapped = ByteBuffer.wrap(buffer);
-                    short sizeOfMessage = wrapped.getShort();
-
-                    if (sentence.length() > 2 + sizeOfMessage) {
-                        sentence = sentence.substring(2);
-                        String[] sentenceArray = sentence.substring(0, sizeOfMessage).split(",");
-                        String comepleteMessage = "";
-                        String messageID = "";
-                        for(int i = 4; i<sentenceArray.length; i++){
-                            comepleteMessage += sentenceArray[i];
-                            if(i == 3)
-                                messageID = sentenceArray[i];
-                        }
-                        myWriter.write(comepleteMessage + "\n");
-                        System.out.println(comepleteMessage +"\n");
-                        sentence = sentence.substring(sizeOfMessage);
-
-                    }
-            }
+            Socket socket = new Socket(host,serverPort);
+            socket.setSoTimeout(1000);
+            System.out.println("Just connected to " + socket.getRemoteSocketAddress());
+            PrintWriter toServer =
+                    new PrintWriter(socket.getOutputStream(),true);
+            BufferedReader fromServer =
+                    new BufferedReader(
+                            new InputStreamReader(socket.getInputStream()));
+            toServer.println("Hello from " + socket.getLocalSocketAddress());
+            String line = fromServer.readLine();
+            System.out.println("Client received: " + line + " from Server");
+            toServer.close();
+            fromServer.close();
+            socket.close();
         }
-        catch (Exception e){e.getMessage();}
+        catch(UnknownHostException ex) {
+            ex.printStackTrace();
+        }
+        catch(IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    public static void main(String[] args) throws InterruptedException {
+        Server client = new Server();
+        while (true) {
+            client.run();
+            Thread.sleep(10000);
+        }
     }
 }
