@@ -113,18 +113,19 @@ class Database {
                             new InputStreamReader(socketToService_Anbieter.getInputStream()));
 
             String theOrder = fromService_Anbieter.readLine();
+            System.out.println(theOrder);
             //execute orders and Respond
             String[] theOrderPartitioned = theOrder.split(",");
-            if (theOrderPartitioned[0] == "C") {
-                create(new Dataset(nextFreeId++, Integer.parseInt(theOrderPartitioned[1]), Integer.parseInt(theOrderPartitioned[2]), Integer.parseInt(theOrderPartitioned[3]), theOrderPartitioned[4]));
+            if (theOrderPartitioned[0].equals("C")) {
+                create(new Dataset(nextFreeId++, 1, 2, Integer.parseInt(theOrderPartitioned[1]), theOrderPartitioned[2]));
                 toService_Anbieter.println("success_created");
-            } else if (theOrderPartitioned[0] == "R") {
+            } else if (theOrderPartitioned[0].equals("R")) {
                 Dataset foundData = read(Integer.parseInt(theOrderPartitioned[1]));
                 toService_Anbieter.println("success_read_" + foundData.primaryKey + "_" + foundData.sensorID + "_" + foundData.valueType + "_" + foundData.sensorValue + "_" + foundData.timestamp);
-            } else if (theOrderPartitioned[0] == "U") {
+            } else if (theOrderPartitioned[0].equals("U")) {
                 update(new Dataset(Integer.parseInt(theOrderPartitioned[5]), Integer.parseInt(theOrderPartitioned[1]), Integer.parseInt(theOrderPartitioned[2]), Integer.parseInt(theOrderPartitioned[3]), theOrderPartitioned[4]));
                 toService_Anbieter.println("success_updated");
-            } else if (theOrderPartitioned[0] == "D") {
+            } else if (theOrderPartitioned[0].equals("D")) {
                 delete(Integer.parseInt(theOrderPartitioned[1]));
                 toService_Anbieter.println("success_deleated");
             } else {
