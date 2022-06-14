@@ -36,7 +36,7 @@ public class Sensor1{
      }
 
      public static void receiveDataFunc() throws IOException {
-         System.out.println("data will be recieved");
+        // System.out.println("data will be recieved");
          DatagramPacket receivedPacket =  new DatagramPacket(rcvData, rcvData.length);
 
          socket.receive(receivedPacket);
@@ -53,11 +53,11 @@ public class Sensor1{
 
         Random r1 = new Random();
         humidity = String.valueOf(r1.nextInt(91) + 10);
-        System.out.println("Current Humidity: " + humidity);
-         System.out.println("data was recieved");
+        //System.out.println("Current Humidity: " + humidity);
+      //   System.out.println("data was recieved");
      }
     public static void sendDataFunc() throws IOException {
-        System.out.println("data will be send");
+       // System.out.println("data will be send");
 
         String timeStamp = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss", Locale.GERMANY).format(new java.util.Date());
          String sentence = srcAdr.toUpperCase() + "," + dstAdr.toUpperCase() + "," + String.valueOf(port) + "," +
@@ -66,7 +66,7 @@ public class Sensor1{
 
          DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, ipAdr, Integer.parseInt(port));
          socket.send(sendPacket);
-        System.out.println("data was send");
+       // System.out.println("data was send");
     }
 
     public static void generateData(){

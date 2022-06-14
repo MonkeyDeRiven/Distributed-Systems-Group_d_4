@@ -58,9 +58,16 @@ services:
     restart: always
 
   server:
-    container_name: Service_Anbieter
+    container_name: server
 
     build: ./src/Service_Anbieter
+    volumes:
+      - reportportal-data:/data
+    restart: always
+
+  db:
+    container_name: db
+    build: ./src/Database
     volumes:
       - reportportal-data:/data
     restart: always

@@ -10,9 +10,11 @@ import static java.lang.Thread.sleep;
 
 
 //TimeUnit.SECONDS.sleep(1);
-class IoT
-{
-   static InetAddress serverAdr;
+class IoT {
+    int serverPort = 1337;
+
+    static int rttCounter = 0;
+    static InetAddress serverAdr;
 
     static {
         try {
@@ -22,26 +24,9 @@ class IoT
         }
     }
 
-    static Socket gatewaySocket;
 
-    static {
-        try {
-            gatewaySocket = new Socket(serverAdr, 1337);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    static InetAddress[] allSensorIps;
     static int sensorCount = Integer.parseInt(System.getenv("numberOfSensors"));
 
-    static {
-        try {
-            allSensorIps = new InetAddress[]{InetAddress.getByName("172.20.0.2"),InetAddress.getByName("172.20.0.3"),InetAddress.getByName("172.20.0.4"),InetAddress.getByName("172.20.0.5")};
-        } catch (UnknownHostException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     static int messageId = 0;
     static DatagramSocket clientSocket = null;
@@ -49,7 +34,7 @@ class IoT
     static final int sensorPort = 4242;
     static final String GatewayIPAdr;
     static int messageIDForTCP = 0;
-    static String sentence ="" ;
+    static String sentence = "";
 
 
     static {
@@ -62,29 +47,23 @@ class IoT
 
     IoT() throws UnknownHostException {
     }
-    public static void requestAllIpsFromSensor() throws SocketException, UnknownHostException {
-       /* byte[] sendData = new byte[128];
-        byte[] receiveData = new byte[128];
-        clientSocket = new DatagramSocket(6969);
 
-        InetAddress hostIp = InetAddress.getLocalHost();
-        System.out.println(hostIp + "\n\n\n\n\n");*/
+
+    public static void incrRTT() {
+        rttCounter = rttCounter + 1;
     }
 
-    private static void sendDataToServer(DatagramPacket receivedData) throws IOException {
-
-
-        DataOutputStream outToServer = new DataOutputStream(gatewaySocket.getOutputStream());
-        outToServer.write(receivedData.getData());
-
-    }
     public static void main(String args[]) throws Exception {
+        int serverPort = 1337;
+        ServerSocket serverSocket = new ServerSocket(serverPort);
+        serverSocket.setSoTimeout(10000);
+
         clientSocket = new DatagramSocket(6969);
         try {
             int whichPortsNow = 0;
-            while(true) {
-                for(int i = 0; i<sensorCount; i++) {
-                    sendDataToSensors(InetAddress.getByName("sensor" + i));
+            while (true) {
+                for (int i = 0; i < sensorCount; i++) {
+                    sendDataToSensors(InetAddress.getByName("sensor" + i), rttCounter, serverSocket);
                 }
                 Thread.sleep(10000);
             }
@@ -98,14 +77,13 @@ class IoT
         clientSocket.close();
     }
 
-    private static void sendDataToSensors(InetAddress dstIPAdr) throws IOException, InterruptedException {
+    private static synchronized void sendDataToSensors(InetAddress dstIPAdr, int rttCounter, ServerSocket serverSocket) throws IOException, InterruptedException {
         byte[] sendData = new byte[512];
         byte[] receiveData = new byte[512];
 
-        String sentence =  GatewayIPAdr + "," + dstIPAdr + "," + "6969" + "," + String.valueOf(messageId++) + "," + messageTypeForSensor + ",";
+        String sentence = GatewayIPAdr + "," + dstIPAdr + "," + "6969" + "," + String.valueOf(messageId++) + "," + messageTypeForSensor + ",";
 
         sendData = sentence.getBytes();
-        InetAddress sensorIP = InetAddress.getByName(GatewayIPAdr);
         DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, dstIPAdr, sensorPort);
 
 
@@ -119,68 +97,59 @@ class IoT
         String[] modifiedSentenceArr = modifiedSentence.split(",");
         modifiedSentence = "";
 
-        for(int i = 0; i<modifiedSentenceArr.length-1; i++)
+        for (int i = 0; i < modifiedSentenceArr.length - 1; i++)
             modifiedSentence = modifiedSentence + modifiedSentenceArr[i] + ",";
 
-       System.out.println("Data from Sensor:" + modifiedSentence);
+        System.out.println("Data from Sensor:" + modifiedSentence);
 
 
         String receivePacketString = new String(receivePacket.getData());
         String[] messageArray = receivePacketString.split(",");
         String completeMessage = "";
 
-        for(int i = 4; i<messageArray.length-1; i++){
+        for (int i = 4; i < messageArray.length - 1; i++) {
             completeMessage += messageArray[i] + ",";
         }
 
-        completeMessage = getTCPHeader() + "," + completeMessage;
-        sendPacket = new DatagramPacket(completeMessage.getBytes(), completeMessage.getBytes().length);
 
-        long timeStartTrip = System.currentTimeMillis();
-        sendDataToServer(sendPacket);
-        receiveACK();
-        long timeEndTrip = System.currentTimeMillis();
 
-        long RTT = timeEndTrip - timeStartTrip;
-        System.out.println("Round Trip Time: " + RTT + "ms\n");
-    }
+            try {
+                System.out.println("Waiting for client on port " + serverSocket.getLocalPort() + "...");
 
-    private static void receiveACK() throws IOException {
+                Socket server = serverSocket.accept();
+                System.out.println("Just connected to " + server.getRemoteSocketAddress());
 
-        byte[] buffer = new byte[1];
+                PrintWriter toClient =
+                        new PrintWriter(server.getOutputStream(), true);
+                BufferedReader fromClient =
+                        new BufferedReader(
+                                new InputStreamReader(server.getInputStream()));
 
-        while (true) {
-            BufferedReader inputFromClient = new BufferedReader(new InputStreamReader(gatewaySocket.getInputStream()));
-            DataOutputStream outToClient = new DataOutputStream(gatewaySocket.getOutputStream());
 
-            sentence += inputFromClient.readLine();
-            if (sentence.length() < 2) {
-                continue;
-            }
-            String sizeOfSentenceString = "" + sentence.charAt(0) + sentence.charAt(1);
+                String l1 = fromClient.readLine();
+                String l2 = fromClient.readLine();
+                String l3 = fromClient.readLine();
+                String l4 = fromClient.readLine();
+                String l5 = fromClient.readLine();
+                String l6 = fromClient.readLine();
+                String l7 = fromClient.readLine();
+                fromClient.readLine();
+                String l9 = fromClient.readLine();
 
-            buffer = sizeOfSentenceString.getBytes();
-            ByteBuffer wrapped = ByteBuffer.wrap(buffer);
-            short sizeOfMessage = wrapped.getShort();
+                if( true/*l1 == "POST sensordaten HTTP/1.1" && l9 == "Sende+Sensordaten"*/){
 
-            if (sentence.length() > 2 + sizeOfMessage) {
-                sentence = sentence.substring(2);
-                String[] sentenceArray = sentence.substring(0, sizeOfMessage).split(",");
-                String comepleteMessage = "";
-                String messageID = "";
-                for(int i = 4; i<sentenceArray.length; i++){
-                    comepleteMessage += sentenceArray[i];
-                    if(i == 3)
-                        messageID = sentenceArray[i];
+                        System.out.println("POST Request Acknowledged: sending Sensor Data in Style " + l1);
+                    toClient.println("<html><head><title>Sende+Sensordaten</title></head><body>" + completeMessage + "</body></html>");
+
+                }else{
+                    System.out.println("request not understood");
+                    toClient.println("request not understood");
                 }
-                sentence = sentence.substring(sizeOfMessage);
             }
-        }
-
-
-
-
+            catch(Exception e) {
+            }
     }
+
 
     private static String getTCPHeader() throws UnknownHostException {
         String sourceIP = InetAddress.getByName("iotgateway").toString().split("/")[1];
@@ -191,22 +160,4 @@ class IoT
         String header = destinationIP + "," + sourceIP + "," +  port + "," + messageID + "," + "HTTP";
         return header;
     }
-
-
-
-
 }
-
-/*
-    Thread serverThread = new Thread(){
-        //Code for TCP Client
-        public void run(){
-            try {
-                sendDataToServer();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    };
-
-        serverThread.run();*/
