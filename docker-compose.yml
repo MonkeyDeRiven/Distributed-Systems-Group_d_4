@@ -64,3 +64,19 @@ services:
     volumes:
       - reportportal-data:/data
     restart: always
+
+  DB1:
+    container_name: DB1
+
+    build: ./src/Database
+    volumes:
+      - reportportal-data:/data
+    restart: always
+
+  DB2:
+    container_name: DB2
+
+    build: ./src/Database
+    volumes:
+      - reportportal-data:/data
+    restart: always
