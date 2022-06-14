@@ -124,15 +124,44 @@ class IoT {
                 BufferedReader fromClient =
                         new BufferedReader(
                                 new InputStreamReader(server.getInputStream()));
+<<<<<<< HEAD
                 String line = fromClient.readLine();
                 System.out.println("Server received: " + line);
                 toClient.println(completeMessage + "");
+=======
+
+
+                String l1 = fromClient.readLine();
+                String l2 = fromClient.readLine();
+                String l3 = fromClient.readLine();
+                String l4 = fromClient.readLine();
+                String l5 = fromClient.readLine();
+                String l6 = fromClient.readLine();
+                String l7 = fromClient.readLine();
+                fromClient.readLine();
+                String l9 = fromClient.readLine();
+
+                if( true/*l1 == "POST sensordaten HTTP/1.1" && l9 == "Sende+Sensordaten"*/){
+
+                        System.out.println("POST Request Acknowledged: sending Sensor Data in Style " + l1);
+                    toClient.println("<html><head><title>Sende+Sensordaten</title></head><body>" + completeMessage + "</body></html>");
+
+                }else{
+                    System.out.println("request not understood");
+                    toClient.println("request not understood");
+                }
+>>>>>>> d371bd116ed029e287395461d0ee098beb654ca2
             }
             catch(Exception e) {
             }
     }
+<<<<<<< HEAD
 
 
+=======
+
+
+>>>>>>> d371bd116ed029e287395461d0ee098beb654ca2
     private static String getTCPHeader() throws UnknownHostException {
         String sourceIP = InetAddress.getByName("iotgateway").toString().split("/")[1];
         String destinationIP = InetAddress.getByName("server").toString().split("/")[1];

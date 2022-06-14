@@ -64,3 +64,10 @@ services:
     volumes:
       - reportportal-data:/data
     restart: always
+
+  db:
+    container_name: db
+    build: ./src/Database
+    volumes:
+      - reportportal-data:/data
+    restart: always
