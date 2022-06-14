@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.InetAddress;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -92,18 +93,21 @@ class Database {
     }
 
 
-    public void run() throws IOException {
+    public void run(ServerSocket serverSocket) throws IOException {
 
         //int myPort_isServer = 6788;
         int Service_AnbieterPort_isClient = 5829;
 
         /// wait for orders
+
+        while(true) {
             InetAddress serverAdress = InetAddress.getByName("server");
             System.out.println("Trying to " + Service_AnbieterPort_isClient);
-            Socket socketToService_Anbieter = new Socket(serverAdress,Service_AnbieterPort_isClient);
+            Socket socketToService_Anbieter = serverSocket.accept();
+
             socketToService_Anbieter.setSoTimeout(1000);
             PrintWriter toService_Anbieter =
-                    new PrintWriter(socketToService_Anbieter.getOutputStream(),true);
+                    new PrintWriter(socketToService_Anbieter.getOutputStream(), true);
             BufferedReader fromService_Anbieter =
                     new BufferedReader(
                             new InputStreamReader(socketToService_Anbieter.getInputStream()));
@@ -111,30 +115,29 @@ class Database {
             String theOrder = fromService_Anbieter.readLine();
             //execute orders and Respond
             String[] theOrderPartitioned = theOrder.split(",");
-            if(theOrderPartitioned[0] == "C"){
-                create(new Dataset(nextFreeId++,Integer.parseInt(theOrderPartitioned[1]),Integer.parseInt(theOrderPartitioned[2]),Integer.parseInt(theOrderPartitioned[3]),theOrderPartitioned[4]));
+            if (theOrderPartitioned[0] == "C") {
+                create(new Dataset(nextFreeId++, Integer.parseInt(theOrderPartitioned[1]), Integer.parseInt(theOrderPartitioned[2]), Integer.parseInt(theOrderPartitioned[3]), theOrderPartitioned[4]));
                 toService_Anbieter.println("success_created");
             } else if (theOrderPartitioned[0] == "R") {
                 Dataset foundData = read(Integer.parseInt(theOrderPartitioned[1]));
-                toService_Anbieter.println("success_read_"+ foundData.primaryKey + "_" +foundData.sensorID + "_"+ foundData.valueType + "_"+ foundData.sensorValue + "_" + foundData.timestamp);
+                toService_Anbieter.println("success_read_" + foundData.primaryKey + "_" + foundData.sensorID + "_" + foundData.valueType + "_" + foundData.sensorValue + "_" + foundData.timestamp);
             } else if (theOrderPartitioned[0] == "U") {
-                update(new Dataset(Integer.parseInt(theOrderPartitioned[5]),Integer.parseInt(theOrderPartitioned[1]),Integer.parseInt(theOrderPartitioned[2]),Integer.parseInt(theOrderPartitioned[3]),theOrderPartitioned[4]));
+                update(new Dataset(Integer.parseInt(theOrderPartitioned[5]), Integer.parseInt(theOrderPartitioned[1]), Integer.parseInt(theOrderPartitioned[2]), Integer.parseInt(theOrderPartitioned[3]), theOrderPartitioned[4]));
                 toService_Anbieter.println("success_updated");
             } else if (theOrderPartitioned[0] == "D") {
                 delete(Integer.parseInt(theOrderPartitioned[1]));
                 toService_Anbieter.println("success_deleated");
-            }else {
+            } else {
                 toService_Anbieter.println("failed_TaskNotUnderstood");
             }
+        }
     }
 
 
     public static void main(String[] args) throws InterruptedException, IOException {
         Database thisDatabse = new Database();
-        while (true) {
-            thisDatabse.run();
-            Thread.sleep(10000);
-        }
+        ServerSocket servSocket = new ServerSocket(5829);
+        thisDatabse.run(servSocket);
     }
 }
 
