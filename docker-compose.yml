@@ -11,6 +11,9 @@ services:
     container_name: Sensor0
     build: ./src/sensor1
 
+    environment:
+      sensorID: 0
+
     ## Uncomment if needed
     # ports:
     #   - "6969:6969"
@@ -20,6 +23,10 @@ services:
   sensor1:
     container_name: Sensor1
     build: ./src/sensor1
+
+    environment:
+      sensorID: 1
+
     ## Uncomment if needed
     # ports:
     #   - "6969:6969"
@@ -29,6 +36,10 @@ services:
   sensor2:
     container_name: Sensor2
     build: ./src/sensor1
+
+    environment:
+      sensorID: 2
+
     ## Uncomment if needed
     # ports:
     #   - "6969:6969"
@@ -38,6 +49,10 @@ services:
   sensor3:
     container_name: Sensor3
     build: ./src/sensor1
+
+    environment:
+      sensorID: 3
+
     ## Uncomment if needed
     # ports:
     #   - "6969:6969"

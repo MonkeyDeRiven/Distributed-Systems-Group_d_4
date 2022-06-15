@@ -1,6 +1,11 @@
 package Database;
 
-
+import org.apache.thrift.TException;
+import org.apache.thrift.server.TServer;
+import org.apache.thrift.server.TSimpleServer;
+import org.apache.thrift.transport.TServerSocket;
+import org.apache.thrift.transport.TServerTransport;
+import org.apache.thrift.transport.TTransportException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,54 +14,24 @@ import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 
-class Database {
+class Database implements crudService.Iface{
     //class for storing one db entry
 
     public static  Dataset dataSetToProcess;
 
+    static crudService.Processor processor = new crudService.Processor(new Database());
+
     public  int nextFreeId = 0;
-    class Dataset {
-
-        public int primaryKey;
-        public int sensorID;
-        public int valueType;
-        public int sensorValue;
-        public String timestamp;
-
-
-
-        public Dataset(int primaryKey, int sensorID, int valueType, int sensorValue, String timestamp) {
-            this.primaryKey = primaryKey;
-            this.sensorID = sensorID;
-            this.valueType = valueType;
-            this.sensorValue = sensorValue;
-            this.timestamp = timestamp;
-        }
-
-        public boolean equals(Object compareDataset){
-            if(this == compareDataset){
-                return true;
-            }
-            if(!(compareDataset instanceof Dataset)){
-                return false;
-            }
-            return this.primaryKey == ((Dataset) compareDataset).primaryKey;
-        }
-
-        public int hashCode(){
-            return primaryKey;
-        }
-    }
 
     //Table for Datasets from sensors
     private ArrayList<Dataset> DBContent = new ArrayList();
 
 
     //API functions CRUD
-    public void create(Dataset newDataset){
+    @Override
+    public void create(Dataset newDataset) throws TException{
         //if is true when the given dataset does not exist already!
         if(read(newDataset.primaryKey) == null){
             DBContent.add(newDataset);
@@ -66,7 +41,8 @@ class Database {
         System.out.println("Dataset already exists!");
     }
 
-    public Dataset read(int primaryKey){
+    @Override
+    public Dataset read(int primaryKey) throws TException{
         Dataset wantedDataset = null;
         for(int i = 0; i < DBContent.size(); i++){
             if(DBContent.get(i).primaryKey == primaryKey){
@@ -76,14 +52,21 @@ class Database {
         return wantedDataset;
     }
 
-    public void update(Dataset updatedDataset){
+    @Override
+    public void update(Dataset updatedDataset) throws TException{
+        if(read(updatedDataset.primaryKey) == null) {
+            System.out.println("Dataset does not exist!");
+            return;
+        }
         DBContent.get(updatedDataset.primaryKey).sensorID = updatedDataset.sensorID;
         DBContent.get(updatedDataset.primaryKey).valueType = updatedDataset.valueType;
         DBContent.get(updatedDataset.primaryKey).sensorValue = updatedDataset.sensorValue;
         DBContent.get(updatedDataset.primaryKey).timestamp = updatedDataset.timestamp;
+        System.out.println("Dataset was updated successfully");
     }
 
-    public void delete(int primaryKey){
+    @Override
+    public void remove(int primaryKey) throws TException {
         if(read(primaryKey) == null){
             System.out.println("Dataset does not exist!");
             return;
@@ -91,7 +74,6 @@ class Database {
         DBContent.remove(read(primaryKey));
         System.out.println("Dataset was removed successfully!");
     }
-
 
     public void run(ServerSocket serverSocket) throws IOException {
 
@@ -115,6 +97,7 @@ class Database {
             String theOrder = fromService_Anbieter.readLine();
             System.out.println(theOrder);
             //execute orders and Respond
+            /*
             String[] theOrderPartitioned = theOrder.split(",");
             if (theOrderPartitioned[0].equals("C")) {
                 create(new Dataset(nextFreeId++, 1, 2, Integer.parseInt(theOrderPartitioned[1]), theOrderPartitioned[2]));
@@ -126,19 +109,32 @@ class Database {
                 update(new Dataset(Integer.parseInt(theOrderPartitioned[5]), Integer.parseInt(theOrderPartitioned[1]), Integer.parseInt(theOrderPartitioned[2]), Integer.parseInt(theOrderPartitioned[3]), theOrderPartitioned[4]));
                 toService_Anbieter.println("success_updated");
             } else if (theOrderPartitioned[0].equals("D")) {
-                delete(Integer.parseInt(theOrderPartitioned[1]));
+                remove(Integer.parseInt(theOrderPartitioned[1]));
                 toService_Anbieter.println("success_deleated");
             } else {
                 toService_Anbieter.println("failed_TaskNotUnderstood");
             }
+             */
         }
     }
 
 
-    public static void main(String[] args) throws InterruptedException, IOException {
-        Database thisDatabse = new Database();
+    public static void main(String[] args) throws InterruptedException, IOException, TTransportException {
+        TServer server;
+        TServerTransport serverTransport;
+        try {
+            serverTransport = new TServerSocket(9090);
+            server = new TSimpleServer(new TServer.Args(serverTransport).processor(processor));
+            server.serve();
+        }catch(TTransportException e){
+            e.printStackTrace();
+        }
+
+        /*
+        Database thisDatabase = new Database();
         ServerSocket servSocket = new ServerSocket(5829);
-        thisDatabse.run(servSocket);
+        thisDatabase.run(servSocket);
+        */
     }
 }
 

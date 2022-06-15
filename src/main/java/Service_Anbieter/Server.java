@@ -1,8 +1,18 @@
 package Service_Anbieter;
+import Database.Dataset;
+import Database.crudService;
+import org.apache.thrift.TException;
+import org.apache.thrift.protocol.TBinaryProtocol;
+import org.apache.thrift.protocol.TProtocol;
+import org.apache.thrift.transport.TSocket;
+import org.apache.thrift.transport.TTransport;
+
 import java.io.*;
 import java.net.*;
 
 public class Server {
+
+    int primaryKey = 0;
     public void run() {
         try {
             /// server ... means IoT gateway
@@ -52,7 +62,7 @@ public class Server {
                     }
                 }
             }
-
+            //4: sensorID 5: messageType 6: value 7:timeStamp
             String bodycontainsAsString = "";
             for(int h = bodyStart;bodyStart<bodyEnd;bodyStart++){
                 bodycontainsAsString = bodycontainsAsString + "" + chars[bodyStart];
@@ -65,6 +75,7 @@ public class Server {
             sendDataToDatabase(bodycontainsAsString);
 
 
+
         }
         catch(UnknownHostException ex) {
             ex.printStackTrace();
@@ -75,7 +86,7 @@ public class Server {
     }
 
     private void sendDataToDatabase(String bodycontainsAsString) {
-
+        /*
         try {
             /// Database port
             int dataBasePort = 5829;
@@ -103,8 +114,34 @@ public class Server {
         catch(IOException e){
             e.printStackTrace();
         }
+    */
+        //4: sensorID 5: messageType 6: value 7:timeStamp
 
+        String contentList[] = bodycontainsAsString.split("/");
+        Dataset newDataset = new Dataset();
+        newDataset.primaryKey = primaryKey++;
+        newDataset.sensorID = Integer.parseInt(contentList[1]);
+        newDataset.valueType = contentList[2];
+        newDataset.sensorValue = Integer.parseInt(contentList[3]);
+        newDataset.timestamp = contentList[3];
 
+        try {
+            TTransport transport;
+
+            transport = new TSocket(InetAddress.getByName("db").toString().split("/")[1], 9090);
+            transport.open();
+
+            TProtocol protocol = new TBinaryProtocol(transport);
+            crudService.Client client = new crudService.Client(protocol);
+
+            client.create(newDataset);
+
+            transport.close();
+        } catch (TException x) {
+            x.printStackTrace();
+        } catch (UnknownHostException exception) {
+            throw new RuntimeException(exception);
+        }
     }
 
     public static void main(String[] args) throws InterruptedException {

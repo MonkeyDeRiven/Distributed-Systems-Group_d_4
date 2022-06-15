@@ -19,10 +19,14 @@ public class Sensor1{
     static String srcAdr;
     static String messageID;
     static String messageType;
+
+    static String valueType = "humidity";
     static String humidity;
 
     static String timeStamp;
     static String port;
+
+    static int sensorID = Integer.parseInt(System.getenv("sensorID"));
 
 
     public static void openSocket() throws SocketException {
@@ -61,7 +65,7 @@ public class Sensor1{
 
         String timeStamp = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss", Locale.GERMANY).format(new java.util.Date());
         String sentence = srcAdr.toUpperCase() + "," + dstAdr.toUpperCase() + "," + String.valueOf(port) + "," +
-                String.valueOf(messageID) + "," + humidity + "," + timeStamp + ",";
+                String.valueOf(messageID) + "," + sensorID + "," + messageType + "," + humidity + "," + timeStamp + ",";
         sendData = sentence.getBytes();
 
         DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, ipAdr, Integer.parseInt(port));
