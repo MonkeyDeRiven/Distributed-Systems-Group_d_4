@@ -65,17 +65,8 @@ services:
       - reportportal-data:/data
     restart: always
 
-  DB1:
-    container_name: DB1
-
-    build: ./src/Database
-    volumes:
-      - reportportal-data:/data
-    restart: always
-
-  DB2:
-    container_name: DB2
-
+  db:
+    container_name: db
     build: ./src/Database
     volumes:
       - reportportal-data:/data
