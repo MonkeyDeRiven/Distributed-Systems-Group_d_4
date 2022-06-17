@@ -9,7 +9,7 @@ volumes:
 services:
   sensor0:
     container_name: Sensor0
-    build: ./src/sensor1
+    build: ./sensor1
 
     environment:
       sensorID: 0
@@ -22,7 +22,7 @@ services:
     restart: always
   sensor1:
     container_name: Sensor1
-    build: ./src/sensor1
+    build: ./sensor1
 
     environment:
       sensorID: 1
@@ -35,7 +35,7 @@ services:
     restart: always
   sensor2:
     container_name: Sensor2
-    build: ./src/sensor1
+    build: ./sensor1
 
     environment:
       sensorID: 2
@@ -48,7 +48,7 @@ services:
     restart: always
   sensor3:
     container_name: Sensor3
-    build: ./src/sensor1
+    build: ./sensor1
 
     environment:
       sensorID: 3
@@ -62,7 +62,7 @@ services:
   iotgateway:
     container_name: IoT_Gateway
 
-    build: ./src/IoTGateway
+    build: ./IoTGateway
     ## Uncomment if needed
     # ports:
     #   - "81:81"
@@ -75,14 +75,14 @@ services:
   server:
     container_name: server
 
-    build: ./src/Service_Anbieter
+    build: ./Service_Anbieter
     volumes:
       - reportportal-data:/data
     restart: always
 
   db:
     container_name: db
-    build: ./src/Database
+    build: ./Service_Anbieter
     volumes:
       - reportportal-data:/data
     restart: always

@@ -7,7 +7,10 @@
     <groupId>vs</groupId>
     <artifactId>group_d_4</artifactId>
     <version>1.0-SNAPSHOT</version>
-
+    <packaging>pom</packaging>
+    <modules>
+        <module>Service_Anbieter</module>
+    </modules>
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
@@ -15,10 +18,11 @@
 
     <dependencies>
         <!-- https://mvnrepository.com/artifact/org.apache.thrift/libthrift -->
+
         <dependency>
             <groupId>org.apache.thrift</groupId>
             <artifactId>libthrift</artifactId>
-            <version>0.13.0</version>
+            <version>0.16.0</version>
         </dependency>
     </dependencies>
 
