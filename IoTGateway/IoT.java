@@ -112,12 +112,12 @@ class IoT {
             completeMessage += messageArray[i] + ",";
         }
 
-
-
+        /*
+        Thats just a temporary solution. We acutally need to create a buffer class with syncrhonized methods,
+        where we store our sensordata and if we have a certain amount of messages, we can take one msg from
+        the buffer, send it as a request message to our server and delete it from the buffer
+         */
        connectoToHostAndSendRequest(completeMessage);
-
-
-
     }
 
     public static void connectoToHostAndSendRequest(String messageFromSens){ //NEU AMK
