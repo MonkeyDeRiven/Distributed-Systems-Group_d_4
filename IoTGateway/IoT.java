@@ -111,7 +111,7 @@ class IoT {
         for (int i = 4; i < messageArray.length - 1; i++) {
             completeMessage += messageArray[i] + ",";
         }
-
+        schtring k = "";
         /*
         Thats just a temporary solution. We acutally need to create a buffer class with syncrhonized methods,
         where we store our sensordata and if we have a certain amount of messages, we can take one msg from
@@ -134,7 +134,7 @@ class IoT {
 
         String requestMessage ="";
         requestMessage = createMessage(host, messageFromSens);
-        socket.setSoTimeout(1000);
+        socket.setSoTimeout(10000);
         System.out.println("Just connected to " + socket.getRemoteSocketAddress());
         toServer.println(requestMessage);
 
@@ -152,16 +152,4 @@ class IoT {
                         "Content-Length:" + message.length() + "\n"+
                         "Content-Type:text/plain\n\n" +
                         message + "\n";
-    }
-
-
-    private static String getTCPHeader() throws UnknownHostException {
-        String sourceIP = InetAddress.getByName("iotgateway").toString().split("/")[1];
-        String destinationIP = InetAddress.getByName("server").toString().split("/")[1];
-        String port = "1337";
-        String messageID = String.valueOf(messageIDForTCP++);
-
-        String header = destinationIP + "," + sourceIP + "," +  port + "," + messageID + "," + "HTTP";
-        return header;
-    }
 }
