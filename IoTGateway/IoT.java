@@ -58,6 +58,7 @@ class IoT {
         ServerSocket serverSocket = new ServerSocket(serverPort);
         serverSocket.setSoTimeout(10000);
 
+
         clientSocket = new DatagramSocket(6969);
         try {
             int whichPortsNow = 0;
@@ -113,41 +114,44 @@ class IoT {
 
 
 
-        try {
-            System.out.println("Waiting for client on port " + serverSocket.getLocalPort() + "...");
-
-            Socket server = serverSocket.accept();
-            System.out.println("Just connected to " + server.getRemoteSocketAddress());
-
-            PrintWriter toClient =
-                    new PrintWriter(server.getOutputStream(), true);
-            BufferedReader fromClient =
-                    new BufferedReader(
-                            new InputStreamReader(server.getInputStream()));
+       connectoToHostAndSendRequest(completeMessage);
 
 
-            String l1 = fromClient.readLine();
-            String l2 = fromClient.readLine();
-            String l3 = fromClient.readLine();
-            String l4 = fromClient.readLine();
-            String l5 = fromClient.readLine();
-            String l6 = fromClient.readLine();
-            String l7 = fromClient.readLine();
-            String tmp = fromClient.readLine();
-            String l9 = fromClient.readLine();
 
-            if( true/*l1 == "POST sensordaten HTTP/1.1" && l9 == "Sende+Sensordaten"*/){
+    }
 
-                System.out.println("POST Request Acknowledged: sending Sensor Data in Style " + l1);
-                toClient.println("<html><head><title>Sende+Sensordaten</title></head><body>" + completeMessage + "</body></html>");
+    public static void connectoToHostAndSendRequest(String messageFromSens){ //NEU AMK
+        InetAddress host = InetAddress.getByName("server");
+        int port = 1337;
+        Socket socket = new Socket(host, port);
 
-            }else{
-                System.out.println("request not understood");
-                toClient.println("request not understood");
-            }
-        }
-        catch(Exception e) {
-        }
+
+        PrintWriter toServer =
+                new PrintWriter(socket.getOutputStream(),true);
+        BufferedReader fromServer =
+                new BufferedReader(
+                        new InputStreamReader(socket.getInputStream()));
+
+        String requestMessage ="";
+        requestMessage = createMessage(host, messageFromSens);
+        socket.setSoTimeout(1000);
+        System.out.println("Just connected to " + socket.getRemoteSocketAddress());
+        toServer.println(requestMessage);
+
+        toServer.close();
+        fromServer.close();
+        socket.close();
+    }
+
+    public void createMessage(String host, String message){
+        String httpFormat =
+                "POST / HTTP/1.1\n" +
+                        "Host:" + host + "\n" +
+                        "User-Agent: iot_gate_way_group_4\n" +
+                        "Accept: Yes\n" +
+                        "Content-Length:" + message.length() + "\n"+
+                        "Content-Type:text/plain\n\n" +
+                        message + "\n";
     }
 
 

@@ -39,6 +39,8 @@ public class Server {
                     "Sende+Sensordaten\r\n");
             String line = fromServer.readLine();
 
+
+
             int bodyStart = 0;
             int bodyEnd = 0;
             char[] chars = line.toCharArray();
@@ -74,8 +76,6 @@ public class Server {
 
             sendDataToDatabase(bodycontainsAsString);
 
-
-
         }
         catch(UnknownHostException ex) {
             ex.printStackTrace();
@@ -89,6 +89,58 @@ public class Server {
         }
     }
 
+
+    private void run2() throws TTransportException, IOException, InterruptedException { //NEW METHOD
+        Database.main();
+        int serverPort = 1337;
+        ServerSocket serverSocket = new ServerSocket(serverPort);
+        serverSocket.setSoTimeout(10000);
+        System.out.println("Waiting for client on port " + serverSocket.getLocalPort() + "...");
+
+        Socket server = serverSocket.accept();//Change to Host with normal Socket
+        System.out.println("Just connected to " + server.getRemoteSocketAddress());
+
+        PrintWriter toClient =
+                new PrintWriter(server.getOutputStream(), true);
+        BufferedReader fromClient =
+                new BufferedReader(
+                        new InputStreamReader(server.getInputStream()));
+
+
+        String messageBody = ""; // Here are the Data from the Sensor.
+        String line = "";
+        String responseMessage = "";
+        int i = 0;
+        while((line = fromClient.readLine()) != null) {
+            if(i == 7){
+                messageBody = line;
+            }
+            i++;
+        }
+
+        responseMessage = createResponseMessage(messageBody != null);
+        toClient.println(responseMessage);
+    }
+
+    public String createResponseMessage(boolean messageRespondable){
+        String response ="";
+        if(messageRespondable) {
+             response =
+                    "HTTP/1.1 200 OK" + "\n" +
+                            "Content-Type: text/plain\n" +
+                            "Content-Length:" + response.length() +"\n\n" +
+                            "";
+            return response;
+        }
+        else{
+             response =
+                    "HTTP/1.1 501 ERROR" + "\n" +
+                            "Content-Type: text/plain\n" +
+                            "Content-Length:" + response.length() +"\n\n" +
+                            "";
+            return response;
+        }
+    }
     private void sendDataToDatabase(String bodycontainsAsString) {
         /*
         try {
