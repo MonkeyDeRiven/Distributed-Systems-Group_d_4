@@ -1,4 +1,4 @@
 FROM openjdk:17
-COPY ./ /tmp
+COPY ../.. /tmp
 WORKDIR /tmp
 ENTRYPOINT ["java" , "Sensor1.java"]

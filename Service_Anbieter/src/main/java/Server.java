@@ -130,7 +130,7 @@ public class Server {
                             "Content-Type: text/plain\n" +
                             "Content-Length:" + response.length() +"\n\n" +
                             "";
-            return response;
+
         }
         else{
              response =
@@ -138,8 +138,10 @@ public class Server {
                             "Content-Type: text/plain\n" +
                             "Content-Length:" + response.length() +"\n\n" +
                             "";
-            return response;
+
         }
+
+        return response;
     }
     private void sendDataToDatabase(String bodycontainsAsString) {
         /*

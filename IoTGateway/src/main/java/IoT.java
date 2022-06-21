@@ -1,4 +1,4 @@
-package IoTGateway;
+
 
 
 
@@ -10,6 +10,71 @@ import static java.lang.Thread.sleep;
 
 
 //TimeUnit.SECONDS.sleep(1);
+
+
+class TCPThread extends Thread{
+    String udpDatagram = "";
+    TCPThread(String udpDatagram){
+        this.udpDatagram = udpDatagram;
+    }
+    @Override
+    public void run(){
+
+        try {
+            connectoToHostAndSendRequest();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+
+
+    public void connectoToHostAndSendRequest() throws IOException {
+        InetAddress host = InetAddress.getByName("server");
+        int port = 1337;
+        Socket socket = new Socket(host, port);
+
+
+        PrintWriter toServer =
+                new PrintWriter(socket.getOutputStream(), true);
+        BufferedReader fromServer =
+                new BufferedReader(
+                        new InputStreamReader(socket.getInputStream()));
+
+        String requestMessage = "";
+        requestMessage = createMessage("server", this.udpDatagram);
+        socket.setSoTimeout(10000);
+        System.out.println("Just connected to " + socket.getRemoteSocketAddress());
+        toServer.println(requestMessage);
+
+
+        String httpRequest = "";
+        while ((httpRequest += fromServer.readLine()) != null) {
+
+        }
+
+        toServer.close();
+        fromServer.close();
+        socket.close();
+
+        this.stop();
+    }
+
+    public String createMessage(String host, String message) {
+        String httpFormat =
+                "POST / HTTP/1.1\n" +
+                        "Host:" + host + "\n" +
+                        "User-Agent: iot_gate_way_group_4\n" +
+                        "Accept: Yes\n" +
+                        "Content-Length:" + message.length() + "\n" +
+                        "Content-Type:text/plain\n\n" +
+                        message + "\n";
+
+        return httpFormat;
+    }
+}
+
 class IoT {
     int serverPort = 1337;
 
@@ -65,6 +130,7 @@ class IoT {
             while (true) {
                 for (int i = 0; i < sensorCount; i++) {
                     sendDataToSensors(InetAddress.getByName("sensor" + i), rttCounter, serverSocket);
+                    //thread.run();
                 }
                 Thread.sleep(10000);
             }
@@ -111,45 +177,14 @@ class IoT {
         for (int i = 4; i < messageArray.length - 1; i++) {
             completeMessage += messageArray[i] + ",";
         }
-        schtring k = "";
+
         /*
         Thats just a temporary solution. We acutally need to create a buffer class with syncrhonized methods,
         where we store our sensordata and if we have a certain amount of messages, we can take one msg from
         the buffer, send it as a request message to our server and delete it from the buffer
          */
-       connectoToHostAndSendRequest(completeMessage);
+        TCPThread t1 = new TCPThread(completeMessage);
+        t1.run();
+
     }
-
-    public static void connectoToHostAndSendRequest(String messageFromSens){ //NEU AMK
-        InetAddress host = InetAddress.getByName("server");
-        int port = 1337;
-        Socket socket = new Socket(host, port);
-
-
-        PrintWriter toServer =
-                new PrintWriter(socket.getOutputStream(),true);
-        BufferedReader fromServer =
-                new BufferedReader(
-                        new InputStreamReader(socket.getInputStream()));
-
-        String requestMessage ="";
-        requestMessage = createMessage(host, messageFromSens);
-        socket.setSoTimeout(10000);
-        System.out.println("Just connected to " + socket.getRemoteSocketAddress());
-        toServer.println(requestMessage);
-
-        toServer.close();
-        fromServer.close();
-        socket.close();
-    }
-
-    public void createMessage(String host, String message){
-        String httpFormat =
-                "POST / HTTP/1.1\n" +
-                        "Host:" + host + "\n" +
-                        "User-Agent: iot_gate_way_group_4\n" +
-                        "Accept: Yes\n" +
-                        "Content-Length:" + message.length() + "\n"+
-                        "Content-Type:text/plain\n\n" +
-                        message + "\n";
 }

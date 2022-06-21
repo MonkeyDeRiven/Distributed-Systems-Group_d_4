@@ -1,4 +1,4 @@
-package sensor1;
+
 
 import java.io.*;
 import java.net.*;
@@ -25,6 +25,8 @@ public class Sensor1{
 
     static String timeStamp;
     static String port;
+
+
 
     static int sensorID = Integer.parseInt(System.getenv("sensorID"));
 
