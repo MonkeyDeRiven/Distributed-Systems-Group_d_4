@@ -6,11 +6,14 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="sensor1" />
         <module name="Service_Anbieter" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="group_d_4" target="11" />
+      <module name="IoTGateway" target="1.8" />
+      <module name="sensor1" target="1.8" />
       <module name="Service_Anbieter" target="1.8" />
     </bytecodeTargetLevel>
   </component>

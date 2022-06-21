@@ -64,7 +64,7 @@ public class Server {
                     }
                 }
             }
-            //4: sensorID 5: messageType 6: value 7:timeStamp
+
             String bodycontainsAsString = "";
             for(int h = bodyStart;bodyStart<bodyEnd;bodyStart++){
                 bodycontainsAsString = bodycontainsAsString + "" + chars[bodyStart];
@@ -91,7 +91,7 @@ public class Server {
 
 
     private void run2() throws TTransportException, IOException, InterruptedException { //NEW METHOD
-        Database.main();
+
         int serverPort = 1337;
         ServerSocket serverSocket = new ServerSocket(serverPort);
         serverSocket.setSoTimeout(10000);
@@ -111,15 +111,21 @@ public class Server {
         String line = "";
         String responseMessage = "";
         int i = 0;
-        while((line = fromClient.readLine()) != null) {
+        while((line += fromClient.readLine()) != null) {
             if(i == 7){
                 messageBody = line;
             }
             i++;
         }
 
+        System.out.println(line);
+
         responseMessage = createResponseMessage(messageBody != null);
         toClient.println(responseMessage);
+
+        //sendDataToDatabase(bodycontainsAsString);
+
+        //Database.main();
     }
 
     public String createResponseMessage(boolean messageRespondable){
@@ -202,10 +208,10 @@ public class Server {
         }
     }
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException, TTransportException, IOException {
         Server client = new Server();
         while (true) {
-            client.run();
+            client.run2();
             Thread.sleep(10000);
         }
     }

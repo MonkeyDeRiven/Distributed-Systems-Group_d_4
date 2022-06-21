@@ -2,8 +2,10 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/IoTGateway/IoTGateway.iml" filepath="$PROJECT_DIR$/IoTGateway/IoTGateway.iml" />
       <module fileurl="file://$PROJECT_DIR$/Service_Anbieter/Service_Anbieter.iml" filepath="$PROJECT_DIR$/Service_Anbieter/Service_Anbieter.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/group_d_4.iml" filepath="$PROJECT_DIR$/.idea/group_d_4.iml" />
+      <module fileurl="file://$PROJECT_DIR$/group_d_4.iml" filepath="$PROJECT_DIR$/group_d_4.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sensor1/sensor1.iml" filepath="$PROJECT_DIR$/sensor1/sensor1.iml" />
     </modules>
   </component>
 </project>
