@@ -74,48 +74,6 @@ class Database implements crudService.Iface{
         System.out.println("Dataset was removed successfully!");
     }
 
-    public void run(ServerSocket serverSocket) throws IOException {
-
-        //int myPort_isServer = 6788;
-        int Service_AnbieterPort_isClient = 5829;
-
-        /// wait for orders
-
-        while(true) {
-            InetAddress serverAdress = InetAddress.getByName("server");
-            System.out.println("Trying to " + Service_AnbieterPort_isClient);
-            Socket socketToService_Anbieter = serverSocket.accept();
-
-            socketToService_Anbieter.setSoTimeout(1000);
-            PrintWriter toService_Anbieter =
-                    new PrintWriter(socketToService_Anbieter.getOutputStream(), true);
-            BufferedReader fromService_Anbieter =
-                    new BufferedReader(
-                            new InputStreamReader(socketToService_Anbieter.getInputStream()));
-
-            String theOrder = fromService_Anbieter.readLine();
-            System.out.println(theOrder);
-            //execute orders and Respond
-            /*
-            String[] theOrderPartitioned = theOrder.split(",");
-            if (theOrderPartitioned[0].equals("C")) {
-                create(new Dataset(nextFreeId++, 1, 2, Integer.parseInt(theOrderPartitioned[1]), theOrderPartitioned[2]));
-                toService_Anbieter.println("success_created");
-            } else if (theOrderPartitioned[0].equals("R")) {
-                Dataset foundData = read(Integer.parseInt(theOrderPartitioned[1]));
-                toService_Anbieter.println("success_read_" + foundData.primaryKey + "_" + foundData.sensorID + "_" + foundData.valueType + "_" + foundData.sensorValue + "_" + foundData.timestamp);
-            } else if (theOrderPartitioned[0].equals("U")) {
-                update(new Dataset(Integer.parseInt(theOrderPartitioned[5]), Integer.parseInt(theOrderPartitioned[1]), Integer.parseInt(theOrderPartitioned[2]), Integer.parseInt(theOrderPartitioned[3]), theOrderPartitioned[4]));
-                toService_Anbieter.println("success_updated");
-            } else if (theOrderPartitioned[0].equals("D")) {
-                remove(Integer.parseInt(theOrderPartitioned[1]));
-                toService_Anbieter.println("success_deleated");
-            } else {
-                toService_Anbieter.println("failed_TaskNotUnderstood");
-            }
-             */
-        }
-    }
 
 
     public static void main() throws InterruptedException, IOException, TTransportException {
@@ -123,6 +81,7 @@ class Database implements crudService.Iface{
         TServerTransport serverTransport;
         try {
             serverTransport = new TServerSocket(9090);
+            System.out.println("Fick die Hänne 84\n");
             server = new TSimpleServer(new TServer.Args(serverTransport).processor(processor));
             server.serve();
         }catch(TTransportException e){

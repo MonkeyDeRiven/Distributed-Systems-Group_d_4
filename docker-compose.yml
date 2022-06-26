@@ -75,14 +75,14 @@ services:
   server:
     container_name: server
 
-    build: ./Service_Anbieter
+    build: ./Service_Anbieter/src/main/java/Server
     volumes:
       - reportportal-data:/data
     restart: always
 
   db:
     container_name: db
-    build: ./Service_Anbieter
+    build: ./Service_Anbieter/src/main/java/Database
     volumes:
       - reportportal-data:/data
     restart: always

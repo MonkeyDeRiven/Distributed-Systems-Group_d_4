@@ -12,91 +12,15 @@ import java.net.*;
 public class Server {
 
     int primaryKey = 0;
-    public void run() {
-        try {
-            Database.main();
-            /// server ... means IoT gateway
-            int serverPort = 1337;
-            InetAddress host = InetAddress.getByName("iotgateway");
-            System.out.println("Trying to " + serverPort);
-
-            Socket socket = new Socket(host,serverPort);
-            socket.setSoTimeout(1000);
-            System.out.println("Just connected to " + socket.getRemoteSocketAddress());
-            PrintWriter toServer =
-                    new PrintWriter(socket.getOutputStream(),true);
-            BufferedReader fromServer =
-                    new BufferedReader(
-                            new InputStreamReader(socket.getInputStream()));
-            toServer.println("POST sensordaten HTTP/1.1\r\n" +
-                    "Host: " + host + "\r\n" +
-                    "Accept: */*\r\n" +
-                    "Accept-Language:de-de\r\n" +
-                    "Accet-Encoding: gzip, deflate\r\n"+
-                    "User-Agent: Mozilla/5.0\r\n" +
-                    "Content-Length: 17\r\n" +
-                    "\r\n"+
-                    "Sende+Sensordaten\r\n");
-            String line = fromServer.readLine();
-
-
-
-            int bodyStart = 0;
-            int bodyEnd = 0;
-            char[] chars = line.toCharArray();
-            boolean endit = false;
-            if(line == "request not understood"){
-                System.out.println("Error request not understood");
-            }else{
-                for(int i = 0;i<chars.length;i++){
-                    if(endit){
-                        break;
-                    }
-                    if(chars[i] == 'y' && chars[i+1] == '>'){
-                        bodyStart = i+2;
-                        for(int e = i+2;e<chars.length;e++){
-                            if(chars[e] == '<' && chars[e+1] == '/'){
-                                bodyEnd = e-1;
-                                endit = true;
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-
-            String bodycontainsAsString = "";
-            for(int h = bodyStart;bodyStart<bodyEnd;bodyStart++){
-                bodycontainsAsString = bodycontainsAsString + "" + chars[bodyStart];
-            }
-            System.out.println("Recieved Data: "+ bodycontainsAsString);
-            toServer.close();
-            fromServer.close();
-            socket.close();
-
-            sendDataToDatabase(bodycontainsAsString);
-
-        }
-        catch(UnknownHostException ex) {
-            ex.printStackTrace();
-        }
-        catch(IOException e){
-            e.printStackTrace();
-        } catch (TTransportException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
 
     private void run2() throws TTransportException, IOException, InterruptedException { //NEW METHOD
-
+        Database.main();
         int serverPort = 1337;
         ServerSocket serverSocket = new ServerSocket(serverPort);
-        serverSocket.setSoTimeout(10000);
-        System.out.println("Waiting for client on port " + serverSocket.getLocalPort() + "...");
 
+        System.out.println("Waiting for client on port " + serverSocket.getLocalPort() + "..." +" Zeile 98");
+        serverSocket.setSoTimeout(5000);
         Socket server = serverSocket.accept();//Change to Host with normal Socket
         System.out.println("Just connected to " + server.getRemoteSocketAddress());
 
@@ -109,23 +33,27 @@ public class Server {
 
         String messageBody = ""; // Here are the Data from the Sensor.
         String line = "";
+        String wholeMessage = "";
         String responseMessage = "";
-        int i = 0;
-        while((line += fromClient.readLine()) != null) {
-            if(i == 7){
+        boolean isBody = false;
+
+        while((line = fromClient.readLine()) != null) {
+            wholeMessage += line;
+            if(isBody){
                 messageBody = line;
             }
-            i++;
+            if(line.equals("")){
+                isBody = true;
+            }
         }
 
-        System.out.println(line);
+        System.out.println(line +" Zeile 126");
 
         responseMessage = createResponseMessage(messageBody != null);
         toClient.println(responseMessage);
 
-        //sendDataToDatabase(bodycontainsAsString);
+        sendDataToDatabase(messageBody);
 
-        //Database.main();
     }
 
     public String createResponseMessage(boolean messageRespondable){
@@ -197,6 +125,7 @@ public class Server {
 
             TProtocol protocol = new TBinaryProtocol(transport);
             crudService.Client client = new crudService.Client(protocol);
+
 
             client.create(newDataset);
 

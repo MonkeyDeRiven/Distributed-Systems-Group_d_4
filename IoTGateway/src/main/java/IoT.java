@@ -130,7 +130,7 @@ class IoT {
     public static void connectoToHostAndSendRequest(String completeMessage) throws IOException {
         InetAddress host = InetAddress.getByName("server");
         int port = 1337;
-        Socket socket = new Socket(host, port);
+        Socket socket = new Socket(host.toString().split("/")[1], port);
 
 
         PrintWriter toServer =
@@ -141,15 +141,29 @@ class IoT {
 
         String requestMessage = "";
         requestMessage = createMessage("server", completeMessage);
-        socket.setSoTimeout(5000);
         System.out.println("Just connected to " + socket.getRemoteSocketAddress());
         toServer.println(requestMessage);
 
 
         String httpRequest = "";
-        while ((httpRequest += fromServer.readLine()) != null) {
-
+        String errorMessage ="";
+        String line = "";
+        int i = 0;
+        while ((line = fromServer.readLine()) != null) {
+                httpRequest += line;
+                if(i == 0)
+                    errorMessage = line;
+                i++;
         }
+        String messageArray[] =  errorMessage.split(" ");
+
+        if(messageArray[1].equals("501")){
+            System.out.println("Communication is faulty");
+        }
+        else
+            System.out.println("Communication was successful");
+
+
 
         toServer.close();
         fromServer.close();
