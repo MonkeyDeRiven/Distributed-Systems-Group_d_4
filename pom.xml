@@ -12,6 +12,7 @@
         <module>Service_Anbieter</module>
         <module>sensor1</module>
         <module>IoTGateway</module>
+        <module>Database</module>
 
     </modules>
     <properties>

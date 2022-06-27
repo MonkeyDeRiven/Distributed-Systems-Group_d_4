@@ -5,7 +5,6 @@ volumes:
   reportportal-data:
     # external: true
 
-
 services:
   sensor0:
     container_name: Sensor0
@@ -61,7 +60,11 @@ services:
     restart: always
   iotgateway:
     container_name: IoT_Gateway
-
+    depends_on:
+      - sensor0
+      - sensor1
+      - sensor2
+      - sensor3
     build: IoTGateway
     ## Uncomment if needed
     # ports:
@@ -74,15 +77,18 @@ services:
 
   server:
     container_name: server
-
-    build: ./Service_Anbieter/src/main/java/Server
+    depends_on:
+      - iotgateway
+    build: ./Service_Anbieter
     volumes:
       - reportportal-data:/data
     restart: always
 
   db:
     container_name: db
-    build: ./Service_Anbieter/src/main/java/Database
+    depends_on:
+      - server
+    build: ./Database
     volumes:
       - reportportal-data:/data
     restart: always

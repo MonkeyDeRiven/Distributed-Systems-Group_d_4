@@ -56,17 +56,13 @@ class IoT {
     }
 
     public static void main(String args[]) throws Exception {
-        int serverPort = 1337;
-        ServerSocket serverSocket = new ServerSocket(serverPort);
-        serverSocket.setSoTimeout(10000);
-
 
         clientSocket = new DatagramSocket(6969);
         try {
             int whichPortsNow = 0;
             while (true) {
                 for (int i = 0; i < sensorCount; i++) {
-                    sendDataToSensors(InetAddress.getByName("sensor" + i), rttCounter, serverSocket);
+                    sendDataToSensors(InetAddress.getByName("sensor" + i), rttCounter);
                     //thread.run();
                 }
                 Thread.sleep(10000);
@@ -81,7 +77,7 @@ class IoT {
         clientSocket.close();
     }
 
-    private static synchronized void sendDataToSensors(InetAddress dstIPAdr, int rttCounter, ServerSocket serverSocket) throws IOException, InterruptedException {
+    private static synchronized void sendDataToSensors(InetAddress dstIPAdr, int rttCounter) throws IOException, InterruptedException {
         byte[] sendData = new byte[512];
         byte[] receiveData = new byte[512];
 
@@ -114,6 +110,7 @@ class IoT {
         for (int i = 4; i < messageArray.length - 1; i++) {
             completeMessage += messageArray[i] + ",";
         }
+
 
         /*
         Thats just a temporary solution. We acutally need to create a buffer class with syncrhonized methods,
@@ -149,10 +146,12 @@ class IoT {
         String errorMessage ="";
         String line = "";
         int i = 0;
-        while ((line = fromServer.readLine()) != null) {
-                httpRequest += line;
-                if(i == 0)
+        while (i<3) {
+            line = fromServer.readLine();
+            httpRequest += line;
+                if(i == 0){
                     errorMessage = line;
+                }
                 i++;
         }
         String messageArray[] =  errorMessage.split(" ");

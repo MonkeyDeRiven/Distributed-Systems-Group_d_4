@@ -22,9 +22,9 @@ public class Dataset implements org.apache.thrift.TBase<Dataset, Dataset._Fields
 
   public int primaryKey; // required
   public int sensorID; // required
-  public @org.apache.thrift.annotation.Nullable java.lang.String valueType; // required
+  public @org.apache.thrift.annotation.Nullable String valueType; // required
   public int sensorValue; // required
-  public @org.apache.thrift.annotation.Nullable java.lang.String timestamp; // required
+  public @org.apache.thrift.annotation.Nullable String timestamp; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -34,7 +34,7 @@ public class Dataset implements org.apache.thrift.TBase<Dataset, Dataset._Fields
     SENSOR_VALUE((short)4, "sensorValue"),
     TIMESTAMP((short)5, "timestamp");
 
-    private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
+    private static final java.util.Map<String, _Fields> byName = new java.util.HashMap<String, _Fields>();
 
     static {
       for (_Fields field : java.util.EnumSet.allOf(_Fields.class)) {
@@ -69,7 +69,7 @@ public class Dataset implements org.apache.thrift.TBase<Dataset, Dataset._Fields
      */
     public static _Fields findByThriftIdOrThrow(int fieldId) {
       _Fields fields = findByThriftId(fieldId);
-      if (fields == null) throw new java.lang.IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+      if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
       return fields;
     }
 
@@ -77,14 +77,14 @@ public class Dataset implements org.apache.thrift.TBase<Dataset, Dataset._Fields
      * Find the _Fields constant that matches name, or null if its not found.
      */
     @org.apache.thrift.annotation.Nullable
-    public static _Fields findByName(java.lang.String name) {
+    public static _Fields findByName(String name) {
       return byName.get(name);
     }
 
     private final short _thriftId;
-    private final java.lang.String _fieldName;
+    private final String _fieldName;
 
-    _Fields(short thriftId, java.lang.String fieldName) {
+    _Fields(short thriftId, String fieldName) {
       _thriftId = thriftId;
       _fieldName = fieldName;
     }
@@ -93,7 +93,7 @@ public class Dataset implements org.apache.thrift.TBase<Dataset, Dataset._Fields
       return _thriftId;
     }
 
-    public java.lang.String getFieldName() {
+    public String getFieldName() {
       return _fieldName;
     }
   }
@@ -126,9 +126,9 @@ public class Dataset implements org.apache.thrift.TBase<Dataset, Dataset._Fields
   public Dataset(
     int primaryKey,
     int sensorID,
-    java.lang.String valueType,
+    String valueType,
     int sensorValue,
-    java.lang.String timestamp)
+    String timestamp)
   {
     this();
     this.primaryKey = primaryKey;
@@ -220,11 +220,11 @@ public class Dataset implements org.apache.thrift.TBase<Dataset, Dataset._Fields
   }
 
   @org.apache.thrift.annotation.Nullable
-  public java.lang.String getValueType() {
+  public String getValueType() {
     return this.valueType;
   }
 
-  public Dataset setValueType(@org.apache.thrift.annotation.Nullable java.lang.String valueType) {
+  public Dataset setValueType(@org.apache.thrift.annotation.Nullable String valueType) {
     this.valueType = valueType;
     return this;
   }
@@ -268,11 +268,11 @@ public class Dataset implements org.apache.thrift.TBase<Dataset, Dataset._Fields
   }
 
   @org.apache.thrift.annotation.Nullable
-  public java.lang.String getTimestamp() {
+  public String getTimestamp() {
     return this.timestamp;
   }
 
-  public Dataset setTimestamp(@org.apache.thrift.annotation.Nullable java.lang.String timestamp) {
+  public Dataset setTimestamp(@org.apache.thrift.annotation.Nullable String timestamp) {
     this.timestamp = timestamp;
     return this;
   }
@@ -292,13 +292,13 @@ public class Dataset implements org.apache.thrift.TBase<Dataset, Dataset._Fields
     }
   }
 
-  public void setFieldValue(_Fields field, @org.apache.thrift.annotation.Nullable java.lang.Object value) {
+  public void setFieldValue(_Fields field, @org.apache.thrift.annotation.Nullable Object value) {
     switch (field) {
     case PRIMARY_KEY:
       if (value == null) {
         unsetPrimaryKey();
       } else {
-        setPrimaryKey((java.lang.Integer)value);
+        setPrimaryKey((Integer)value);
       }
       break;
 
@@ -306,7 +306,7 @@ public class Dataset implements org.apache.thrift.TBase<Dataset, Dataset._Fields
       if (value == null) {
         unsetSensorID();
       } else {
-        setSensorID((java.lang.Integer)value);
+        setSensorID((Integer)value);
       }
       break;
 
@@ -314,7 +314,7 @@ public class Dataset implements org.apache.thrift.TBase<Dataset, Dataset._Fields
       if (value == null) {
         unsetValueType();
       } else {
-        setValueType((java.lang.String)value);
+        setValueType((String)value);
       }
       break;
 
@@ -322,7 +322,7 @@ public class Dataset implements org.apache.thrift.TBase<Dataset, Dataset._Fields
       if (value == null) {
         unsetSensorValue();
       } else {
-        setSensorValue((java.lang.Integer)value);
+        setSensorValue((Integer)value);
       }
       break;
 
@@ -330,7 +330,7 @@ public class Dataset implements org.apache.thrift.TBase<Dataset, Dataset._Fields
       if (value == null) {
         unsetTimestamp();
       } else {
-        setTimestamp((java.lang.String)value);
+        setTimestamp((String)value);
       }
       break;
 
@@ -338,7 +338,7 @@ public class Dataset implements org.apache.thrift.TBase<Dataset, Dataset._Fields
   }
 
   @org.apache.thrift.annotation.Nullable
-  public java.lang.Object getFieldValue(_Fields field) {
+  public Object getFieldValue(_Fields field) {
     switch (field) {
     case PRIMARY_KEY:
       return getPrimaryKey();
@@ -356,13 +356,13 @@ public class Dataset implements org.apache.thrift.TBase<Dataset, Dataset._Fields
       return getTimestamp();
 
     }
-    throw new java.lang.IllegalStateException();
+    throw new IllegalStateException();
   }
 
   /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
   public boolean isSet(_Fields field) {
     if (field == null) {
-      throw new java.lang.IllegalArgumentException();
+      throw new IllegalArgumentException();
     }
 
     switch (field) {
@@ -377,11 +377,11 @@ public class Dataset implements org.apache.thrift.TBase<Dataset, Dataset._Fields
     case TIMESTAMP:
       return isSetTimestamp();
     }
-    throw new java.lang.IllegalStateException();
+    throw new IllegalStateException();
   }
 
   @Override
-  public boolean equals(java.lang.Object that) {
+  public boolean equals(Object that) {
     if (that == null)
       return false;
     if (that instanceof Dataset)
@@ -472,7 +472,7 @@ public class Dataset implements org.apache.thrift.TBase<Dataset, Dataset._Fields
 
     int lastComparison = 0;
 
-    lastComparison = java.lang.Boolean.valueOf(isSetPrimaryKey()).compareTo(other.isSetPrimaryKey());
+    lastComparison = Boolean.valueOf(isSetPrimaryKey()).compareTo(other.isSetPrimaryKey());
     if (lastComparison != 0) {
       return lastComparison;
     }
@@ -482,7 +482,7 @@ public class Dataset implements org.apache.thrift.TBase<Dataset, Dataset._Fields
         return lastComparison;
       }
     }
-    lastComparison = java.lang.Boolean.valueOf(isSetSensorID()).compareTo(other.isSetSensorID());
+    lastComparison = Boolean.valueOf(isSetSensorID()).compareTo(other.isSetSensorID());
     if (lastComparison != 0) {
       return lastComparison;
     }
@@ -492,7 +492,7 @@ public class Dataset implements org.apache.thrift.TBase<Dataset, Dataset._Fields
         return lastComparison;
       }
     }
-    lastComparison = java.lang.Boolean.valueOf(isSetValueType()).compareTo(other.isSetValueType());
+    lastComparison = Boolean.valueOf(isSetValueType()).compareTo(other.isSetValueType());
     if (lastComparison != 0) {
       return lastComparison;
     }
@@ -502,7 +502,7 @@ public class Dataset implements org.apache.thrift.TBase<Dataset, Dataset._Fields
         return lastComparison;
       }
     }
-    lastComparison = java.lang.Boolean.valueOf(isSetSensorValue()).compareTo(other.isSetSensorValue());
+    lastComparison = Boolean.valueOf(isSetSensorValue()).compareTo(other.isSetSensorValue());
     if (lastComparison != 0) {
       return lastComparison;
     }
@@ -512,7 +512,7 @@ public class Dataset implements org.apache.thrift.TBase<Dataset, Dataset._Fields
         return lastComparison;
       }
     }
-    lastComparison = java.lang.Boolean.valueOf(isSetTimestamp()).compareTo(other.isSetTimestamp());
+    lastComparison = Boolean.valueOf(isSetTimestamp()).compareTo(other.isSetTimestamp());
     if (lastComparison != 0) {
       return lastComparison;
     }
@@ -539,8 +539,8 @@ public class Dataset implements org.apache.thrift.TBase<Dataset, Dataset._Fields
   }
 
   @Override
-  public java.lang.String toString() {
-    java.lang.StringBuilder sb = new java.lang.StringBuilder("Dataset(");
+  public String toString() {
+    StringBuilder sb = new StringBuilder("Dataset(");
     boolean first = true;
 
     sb.append("primaryKey:");
@@ -587,7 +587,7 @@ public class Dataset implements org.apache.thrift.TBase<Dataset, Dataset._Fields
     }
   }
 
-  private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, java.lang.ClassNotFoundException {
+  private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
     try {
       // it doesn't seem like you should have to do this, but java serialization is wacky, and doesn't call the default constructor.
       __isset_bitfield = 0;

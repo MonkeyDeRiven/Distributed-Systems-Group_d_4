@@ -11,17 +11,24 @@ import java.net.*;
 
 public class Server {
 
+
     int primaryKey = 0;
+    static ServerSocket serverSocket;
+
+    static {
+        try {
+            serverSocket = new ServerSocket(1337);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 
     private void run2() throws TTransportException, IOException, InterruptedException { //NEW METHOD
-        Database.main();
-        int serverPort = 1337;
-        ServerSocket serverSocket = new ServerSocket(serverPort);
+
 
         System.out.println("Waiting for client on port " + serverSocket.getLocalPort() + "..." +" Zeile 98");
-        serverSocket.setSoTimeout(5000);
-        Socket server = serverSocket.accept();//Change to Host with normal Socket
+        Socket server = serverSocket.accept();
         System.out.println("Just connected to " + server.getRemoteSocketAddress());
 
         PrintWriter toClient =
@@ -36,18 +43,21 @@ public class Server {
         String wholeMessage = "";
         String responseMessage = "";
         boolean isBody = false;
+        int i = 0;
 
-        while((line = fromClient.readLine()) != null) {
-            wholeMessage += line;
+        while(i<2) {
+            line = fromClient.readLine();
             if(isBody){
                 messageBody = line;
+                isBody = false;
             }
-            if(line.equals("")){
-                isBody = true;
+            if(line.equals("")) {
+                i++;
+                if (i == 1)isBody = true;
             }
+            wholeMessage += line;
         }
 
-        System.out.println(line +" Zeile 126");
 
         responseMessage = createResponseMessage(messageBody != null);
         toClient.println(responseMessage);
@@ -78,67 +88,39 @@ public class Server {
         return response;
     }
     private void sendDataToDatabase(String bodycontainsAsString) {
-        /*
-        try {
-            /// Database port
-            int dataBasePort = 5829;
-            InetAddress dataBaseID = InetAddress.getByName("db");
-            System.out.println("Trying to " + dataBasePort);
 
-            Socket ToDatabase = new Socket(dataBaseID,dataBasePort);
-            ToDatabase.setSoTimeout(1000);
-            System.out.println("Just connected to " + ToDatabase.getRemoteSocketAddress());
-            PrintWriter toDatabase =
-                    new PrintWriter(ToDatabase.getOutputStream(),true);
-            BufferedReader fromDatabase =
-                    new BufferedReader(
-                            new InputStreamReader(ToDatabase.getInputStream()));
-            toDatabase.println("C,"+bodycontainsAsString);
-            String answear = fromDatabase.readLine();
-            //String[] answearPartitioned = answear.split(",");
-            System.out.println("Recieved Data: "+ answear);
-            toDatabase.close();
-            fromDatabase.close();
-        }
-        catch(UnknownHostException ex) {
-            ex.printStackTrace();
-        }
-        catch(IOException e){
-            e.printStackTrace();
-        }
-    */
-        //4: sensorID 5: messageType 6: value 7:timeStamp
-
-        String contentList[] = bodycontainsAsString.split("/");
+        System.out.println(bodycontainsAsString);
+        String contentList[] = bodycontainsAsString.split(",");
         Dataset newDataset = new Dataset();
         newDataset.primaryKey = primaryKey++;
-        newDataset.sensorID = Integer.parseInt(contentList[1]);
-        newDataset.valueType = contentList[2];
-        newDataset.sensorValue = Integer.parseInt(contentList[3]);
+        System.out.println(primaryKey);
+        newDataset.sensorID = Integer.parseInt(contentList[0]);
+        newDataset.valueType = contentList[1];
+        newDataset.sensorValue = Integer.parseInt(contentList[2]);
         newDataset.timestamp = contentList[3];
 
         try {
             TTransport transport;
-
             transport = new TSocket(InetAddress.getByName("db").toString().split("/")[1], 9090);
             transport.open();
 
             TProtocol protocol = new TBinaryProtocol(transport);
             crudService.Client client = new crudService.Client(protocol);
-
+            System.out.println("Connection was opened successfully");
 
             client.create(newDataset);
 
             transport.close();
         } catch (TException x) {
             x.printStackTrace();
-        } catch (UnknownHostException exception) {
-            throw new RuntimeException(exception);
+        } catch (UnknownHostException e) {
+            throw new RuntimeException(e);
         }
     }
 
     public static void main(String[] args) throws InterruptedException, TTransportException, IOException {
         Server client = new Server();
+
         while (true) {
             client.run2();
             Thread.sleep(10000);
