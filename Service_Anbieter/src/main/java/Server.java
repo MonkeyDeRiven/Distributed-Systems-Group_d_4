@@ -10,7 +10,7 @@ import java.io.*;
 import java.net.*;
 
 public class Server {
-
+    int counter = 0;
 
     int primaryKey = 0;
     static ServerSocket serverSocket;
@@ -106,10 +106,17 @@ public class Server {
 
             TProtocol protocol = new TBinaryProtocol(transport);
             crudService.Client client = new crudService.Client(protocol);
-            System.out.println("Connection was opened successfully");
 
             client.create(newDataset);
-
+            counter++;
+            System.out.println("counter: " + counter);
+            if(counter == 5){
+                System.out.println("Try to get Dataset");
+                Dataset newData;
+                newData = client.read(2);
+                System.out.println(newData.sensorID + ", " + newData.timestamp);
+                System.out.println("Dataset information should be one line above");
+            }
             transport.close();
         } catch (TException x) {
             x.printStackTrace();
