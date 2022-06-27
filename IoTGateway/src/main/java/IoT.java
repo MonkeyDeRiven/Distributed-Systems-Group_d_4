@@ -32,6 +32,7 @@ class IoT {
 
     static int messageId = 0;
     static DatagramSocket clientSocket = null;
+    static DatagramSocket mqttSocket = null;
     static String messageTypeForSensor = "post";
     static final int sensorPort = 4242;
     static final String GatewayIPAdr;
@@ -50,21 +51,22 @@ class IoT {
     IoT() throws UnknownHostException {
     }
 
-
-    public static void incrRTT() {
-        rttCounter = rttCounter + 1;
-    }
-
     public static void main(String args[]) throws Exception {
 
         clientSocket = new DatagramSocket(6969);
+        mqttSocket = new DatagramSocket(7070);
         try {
-            int whichPortsNow = 0;
             while (true) {
                 for (int i = 0; i < sensorCount; i++) {
                     String datagramFromSensor = "";
                     datagramFromSensor = sendDataToSensors(InetAddress.getByName("sensor" + i), rttCounter);
                     TCPThread serverCommunication = new TCPThread(datagramFromSensor);
+                    serverCommunication.start();
+                }
+                for(int i = 0; i < sensorCount; i++) {
+                    String datagramFromMQTTSensor = "";
+                    datagramFromMQTTSensor = sendDataToSensors(InetAddress.getByName("sensor" + i + sensorCount), rttCounter);
+                    TCPThread serverCommunication = new TCPThread(datagramFromMQTTSensor);
                     serverCommunication.start();
                 }
                 Thread.sleep(10000);
@@ -114,6 +116,10 @@ class IoT {
         }
 
         return completeMessage;
+    }
+
+    public void receiveMqttData(){
+
     }
 
 

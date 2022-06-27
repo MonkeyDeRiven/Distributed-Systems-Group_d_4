@@ -1,3 +1,4 @@
+import org.eclipse.paho.client.mqttv3.IMqttMessageListener;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
@@ -13,12 +14,13 @@ public class Sensor2 {
 
     static public void main(String[] args){
         try {
-            MqttClient broker = new MqttClient("tcp://broker.hivemq.com:1883", "Penis");
+            MqttClient broker = new MqttClient("tcp://broker.hivemq.com:1883", "mqttTemperatureChannel");
             broker.connect();
             while(true) {
                 MqttMessage message = createMqttMessage();
-                broker.publish("d", createMqttMessage());
-                Thread.sleep(10000);
+                broker.publish("mqttData", createMqttMessage());
+                Thread.sleep(5000);
+
             }
         }catch(MqttException e){
             e.printStackTrace();
@@ -33,7 +35,6 @@ public class Sensor2 {
         temperature = temperatureGenerator.nextInt(56)-15;
         return temperature;
     }
-
     static public MqttMessage createMqttMessage(){
         String timestamp = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss", Locale.GERMANY).format(new java.util.Date());
         String message = "";
@@ -45,6 +46,4 @@ public class Sensor2 {
 
         return newMessage;
     }
-
-
 }

@@ -1,6 +1,6 @@
 FROM maven:3.8.5-jdk-11 AS BUILD
 COPY pom.xml /tmp/
-COPY ../sensor1/src /tmp/src/
+COPY src /tmp/src/
 WORKDIR /tmp/
 
 RUN mvn package

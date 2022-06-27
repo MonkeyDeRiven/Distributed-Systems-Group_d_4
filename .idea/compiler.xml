@@ -8,12 +8,14 @@
         <outputRelativeToContentRoot value="true" />
         <module name="Database" />
         <module name="Sensor2" />
+        <module name="Adapter" />
         <module name="IoTGateway" />
         <module name="sensor1" />
         <module name="Service_Anbieter" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="Adapter" target="1.8" />
       <module name="Database" target="1.8" />
       <module name="group_d_4" target="11" />
       <module name="IoTGateway" target="1.8" />
