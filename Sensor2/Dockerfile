@@ -9,7 +9,7 @@ RUN mvn package
 FROM openjdk:11
 
 
-COPY --from=BUILD /tmp/target/Sensor1-1.0-SNAPSHOT-jar-with-dependencies.jar /app/Sensor1.jar
+COPY --from=BUILD /tmp/target/Sensor2-1.0-SNAPSHOT-jar-with-dependencies.jar /app/Sensor2.jar
 WORKDIR /app
 
-CMD ["java", "-jar", "/app/Sensor1.jar"]
+CMD ["java", "-jar", "/app/Sensor2.jar"]

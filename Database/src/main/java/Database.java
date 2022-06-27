@@ -35,7 +35,7 @@ class Database implements crudService.Iface{
         System.out.println(" ");
         if(read(newDataset.primaryKey) == null){
             DBContent.add(newDataset);
-            System.out.print("New Dataset was persisted successfully!");
+            System.out.println("New Dataset was persisted successfully!");
         }else
             System.out.println("Dataset already exists!");
     }
