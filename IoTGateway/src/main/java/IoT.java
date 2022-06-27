@@ -62,8 +62,10 @@ class IoT {
             int whichPortsNow = 0;
             while (true) {
                 for (int i = 0; i < sensorCount; i++) {
-                    sendDataToSensors(InetAddress.getByName("sensor" + i), rttCounter);
-                    //thread.run();
+                    String datagramFromSensor = "";
+                    datagramFromSensor = sendDataToSensors(InetAddress.getByName("sensor" + i), rttCounter);
+                    TCPThread serverCommunication = new TCPThread(datagramFromSensor);
+                    serverCommunication.start();
                 }
                 Thread.sleep(10000);
             }
@@ -77,7 +79,7 @@ class IoT {
         clientSocket.close();
     }
 
-    private static synchronized void sendDataToSensors(InetAddress dstIPAdr, int rttCounter) throws IOException, InterruptedException {
+    private static synchronized String sendDataToSensors(InetAddress dstIPAdr, int rttCounter) throws IOException, InterruptedException {
         byte[] sendData = new byte[512];
         byte[] receiveData = new byte[512];
 
@@ -111,64 +113,9 @@ class IoT {
             completeMessage += messageArray[i] + ",";
         }
 
-
-        /*
-        Thats just a temporary solution. We acutally need to create a buffer class with syncrhonized methods,
-        where we store our sensordata and if we have a certain amount of messages, we can take one msg from
-        the buffer, send it as a request message to our server and delete it from the buffer
-         */
-       /* TCPThread t1 = new TCPThread(completeMessage);
-        t1.start();*/
-
-        connectoToHostAndSendRequest(completeMessage);
-
+        return completeMessage;
     }
 
-    public static void connectoToHostAndSendRequest(String completeMessage) throws IOException {
-        InetAddress host = InetAddress.getByName("server");
-        int port = 1337;
-        Socket socket = new Socket(host.toString().split("/")[1], port);
-
-
-        PrintWriter toServer =
-                new PrintWriter(socket.getOutputStream(), true);
-        BufferedReader fromServer =
-                new BufferedReader(
-                        new InputStreamReader(socket.getInputStream()));
-
-        String requestMessage = "";
-        requestMessage = createMessage("server", completeMessage);
-        System.out.println("Just connected to " + socket.getRemoteSocketAddress());
-        toServer.println(requestMessage);
-
-
-        String httpRequest = "";
-        String errorMessage ="";
-        String line = "";
-        int i = 0;
-        while (i<3) {
-            line = fromServer.readLine();
-            httpRequest += line;
-                if(i == 0){
-                    errorMessage = line;
-                }
-                i++;
-        }
-        String messageArray[] =  errorMessage.split(" ");
-
-        if(messageArray[1].equals("501")){
-            System.out.println("Communication is faulty");
-        }
-        else
-            System.out.println("Communication was successful");
-
-
-
-        toServer.close();
-        fromServer.close();
-        socket.close();
-
-    }
 
     public static String createMessage(String host, String message) {
         String httpFormat =

@@ -32,7 +32,7 @@ class Database implements crudService.Iface{
     @Override
     public void create(Dataset newDataset) throws TException{
         //if is true when the given dataset does not exist already!
-        System.out.println("I got called LUL");
+        System.out.println(" ");
         if(read(newDataset.primaryKey) == null){
             DBContent.add(newDataset);
             System.out.print("New Dataset was persisted successfully!");
