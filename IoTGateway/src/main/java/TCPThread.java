@@ -22,32 +22,6 @@ class TCPThread extends Thread {
         }
 
     }
-
-
-   /* public void connectoToHostAndSendRequest() throws IOException {
-        InetAddress host = InetAddress.getByName("server");
-        int port = 1337;
-        Socket socket = new Socket(host, port);
-
-
-        PrintWriter toServer =
-                new PrintWriter(socket.getOutputStream(), true);
-        BufferedReader fromServer =
-                new BufferedReader(
-                        new InputStreamReader(socket.getInputStream()));
-
-        String requestMessage = "";
-        requestMessage = createMessage("server", this.udpDatagram);
-        System.out.println("Just connected to " + socket.getRemoteSocketAddress());
-        toServer.println(requestMessage);
-
-
-        String httpRequest = "";
-        while ((httpRequest += fromServer.readLine()) != null) {
-
-        }*/
-
-
         public void connectoToHostAndSendRequest() throws IOException {
             InetAddress host = InetAddress.getByName("server");
             int port = 1337;
@@ -84,11 +58,9 @@ class TCPThread extends Thread {
             else
                 System.out.println("Communication was successful");
 
-
         toServer.close();
         fromServer.close();
         socket.close();
-
     }
 
     public String createMessage(String host, String message) {
