@@ -104,7 +104,7 @@ services:
     build: Sensor2
 
     environment:
-      sensorID: 4
+      sensorID: 7
 
       ## Uncomment if needed
       # ports:
@@ -113,7 +113,7 @@ services:
       - reportportal-data:/data
     restart: always
   iotgateway:
-    container_name: IoT_Gateway
+    container_name: iotgateway
     depends_on:
       - sensor0
       - sensor1

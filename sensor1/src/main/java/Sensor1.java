@@ -33,7 +33,7 @@ public class Sensor1{
 
     public static void openSocket() throws SocketException {
         System.out.println("socket will be opened");
-        socket = new DatagramSocket(4242);
+        socket = new DatagramSocket(6969);
         System.out.println("socket was opened");
     }
 

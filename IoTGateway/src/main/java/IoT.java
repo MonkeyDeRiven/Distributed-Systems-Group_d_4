@@ -2,6 +2,8 @@
 
 
 
+
+
 import java.io.*;
 import java.net.*;
 import java.nio.ByteBuffer;
@@ -54,23 +56,23 @@ class IoT {
     public static void main(String args[]) throws Exception {
 
         clientSocket = new DatagramSocket(6969);
-        mqttSocket = new DatagramSocket(7070);
+
+        boolean done = true;
         try {
             while (true) {
-                for (int i = 0; i < sensorCount; i++) {
-                    String datagramFromSensor = "";
-                    datagramFromSensor = sendDataToSensors(InetAddress.getByName("sensor" + i), rttCounter);
-                    TCPThread serverCommunication = new TCPThread(datagramFromSensor);
-                    serverCommunication.start();
-                }
                 for(int i = 0; i < sensorCount; i++) {
-                    String datagramFromMQTTSensor = "";
-                    datagramFromMQTTSensor = sendDataToSensors(InetAddress.getByName("sensor" + i + sensorCount), rttCounter);
-                    TCPThread serverCommunication = new TCPThread(datagramFromMQTTSensor);
-                    serverCommunication.start();
+                        String datagramFromSensor = "";
+                        datagramFromSensor = sendDataToSensors(InetAddress.getByName("sensor" + i), rttCounter, 6969);
+                        TCPThread serverCommunication = new TCPThread(datagramFromSensor);
+                        serverCommunication.start();}
+                for(int i = 0; i < 4; i++) {
+                        String datagramFromMQTTSensor = "";
+                        datagramFromMQTTSensor = sendDataToSensors(InetAddress.getByName("adapter"), rttCounter, 6969);
+                        TCPThread serverCommunication = new TCPThread(datagramFromMQTTSensor);
+                        serverCommunication.start();
+                    }
+                    Thread.sleep(10000);
                 }
-                Thread.sleep(10000);
-            }
 
         } catch (SocketException e) {
             System.out.println(e.getMessage());
@@ -81,21 +83,25 @@ class IoT {
         clientSocket.close();
     }
 
-    private static synchronized String sendDataToSensors(InetAddress dstIPAdr, int rttCounter) throws IOException, InterruptedException {
+    private static synchronized String sendDataToSensors(InetAddress dstIPAdr, int rttCounter, int port) throws IOException, InterruptedException {
         byte[] sendData = new byte[512];
         byte[] receiveData = new byte[512];
 
         String sentence = GatewayIPAdr + "," + dstIPAdr + "," + "6969" + "," + String.valueOf(messageId++) + "," + messageTypeForSensor + ",";
 
         sendData = sentence.getBytes();
-        DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, dstIPAdr, sensorPort);
+        DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, dstIPAdr, port);
 
 
         clientSocket.send(sendPacket);
         System.out.println("Packet was send to Sensor: " + dstIPAdr);
         DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
-        clientSocket.setSoTimeout(1000);
+        clientSocket.setSoTimeout(20000);
         clientSocket.receive(receivePacket);
+
+        if(receivePacket.toString().equals("ERROR")){
+            return "";
+        }
 
         String modifiedSentence = new String(receivePacket.getData());
         String[] modifiedSentenceArr = modifiedSentence.split(",");

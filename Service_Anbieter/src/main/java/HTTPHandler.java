@@ -71,7 +71,7 @@ public class HTTPHandler extends Thread{
 
         responseMessage = createResponseMessage(messageBody != null);
         toClient.println(responseMessage);
-
+        System.out.println(messageBody + "\n");
         sendDataToDatabase(messageBody);
 
     }

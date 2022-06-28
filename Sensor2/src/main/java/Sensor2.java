@@ -9,18 +9,18 @@ import java.util.Locale;
 import java.util.Random;
 
 public class Sensor2 {
-    static String sensorID;
+    static int sensorID = Integer.parseInt(System.getenv("sensorID"));;
     static String valueType = "temperature";
 
     static public void main(String[] args){
         try {
-            MqttClient broker = new MqttClient("tcp://broker.hivemq.com:1883", "mqttTemperatureChannel");
+            MqttClient broker = new MqttClient("tcp://broker.hivemq.com:1883", MqttClient.generateClientId());
             broker.connect();
             while(true) {
+                Thread.sleep(5000);
                 MqttMessage message = createMqttMessage();
                 broker.publish("mqttData", createMqttMessage());
-                Thread.sleep(5000);
-
+                System.out.println("Daten an Broker gesendet");
             }
         }catch(MqttException e){
             e.printStackTrace();
