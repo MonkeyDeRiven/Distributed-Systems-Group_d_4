@@ -55,7 +55,7 @@ public class Sensor1{
         dstAdr = metaDataList[1]; // IP Adress from Gateway
         port = metaDataList[2]; //port from Gateway
         messageID = metaDataList[3];
-        messageType = metaDataList[4];
+        messageType = "Humidity";
 
         Random r1 = new Random();
         humidity = String.valueOf(r1.nextInt(91) + 10);

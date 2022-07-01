@@ -20,7 +20,7 @@ public class Sensor2 {
                 Thread.sleep(5000);
                 MqttMessage message = createMqttMessage();
                 broker.publish("mqttData", createMqttMessage());
-                System.out.println("Daten an Broker gesendet");
+                System.out.println("Daten an Adapter gesendet");
             }
         }catch(MqttException e){
             e.printStackTrace();

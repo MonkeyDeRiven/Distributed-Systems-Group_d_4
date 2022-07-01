@@ -44,7 +44,7 @@ public class HTTPHandler extends Thread{
         }
 
 
-        String messageBody = ""; // Here are the Data from the Sensor.
+        String messageBody = null; // Here are the Data from the Sensor.
         String line = "";
         String wholeMessage = "";
         String responseMessage = "";
@@ -71,7 +71,6 @@ public class HTTPHandler extends Thread{
 
         responseMessage = createResponseMessage(messageBody != null);
         toClient.println(responseMessage);
-        System.out.println(messageBody + "\n");
         sendDataToDatabase(messageBody);
 
     }
@@ -100,13 +99,11 @@ public class HTTPHandler extends Thread{
 
     private void sendDataToDatabase(String bodycontainsAsString) {
 
-        System.out.println(bodycontainsAsString);
         String contentList[] = bodycontainsAsString.split(",");
         Dataset newDataset = new Dataset();
         mutex.v();
         newDataset.primaryKey = primaryKey++;
         mutex.p();
-        System.out.println(primaryKey);
         newDataset.sensorID = Integer.parseInt(contentList[0]);
         newDataset.valueType = contentList[1];
         newDataset.sensorValue = Integer.parseInt(contentList[2]);
@@ -121,7 +118,7 @@ public class HTTPHandler extends Thread{
             crudService.Client client = new crudService.Client(protocol);
 
             client.create(newDataset);
-
+            System.out.println("Dataset was send with RPC to Database");
             transport.close();
         } catch (TException x) {
             x.printStackTrace();

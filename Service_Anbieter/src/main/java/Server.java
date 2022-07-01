@@ -28,7 +28,7 @@ public class Server {
 
     private void run2() throws TTransportException, IOException, InterruptedException { //NEW METHOD
 
-        System.out.println("Waiting for client on port " + serverSocket.getLocalPort() + "..." +" Zeile 98");
+        System.out.println("Waiting for client on port " + serverSocket.getLocalPort() + "...");
         Socket server = serverSocket.accept();
         HTTPHandler handler = new HTTPHandler(server, mutex, primaryKey++);
         handler.start();
