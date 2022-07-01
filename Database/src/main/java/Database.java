@@ -26,6 +26,7 @@ class Database implements crudService.Iface{
 
     //Table for Datasets from sensors
     private ArrayList<Dataset> DBContent = new ArrayList();
+    private ArrayList<Dataset> DBContentTemp = new ArrayList();
 
 
     //API functions CRUD
@@ -36,6 +37,7 @@ class Database implements crudService.Iface{
         if(read(newDataset.primaryKey) == null){
             DBContent.add(newDataset);
             System.out.println("New Dataset was persisted successfully!");
+            System.out.println("New Dataset: " + newDataset.sensorID + ", " + newDataset.valueType + ", " + newDataset.sensorValue + ", " + newDataset.timestamp);
         }else
             System.out.println("Dataset already exists!");
     }

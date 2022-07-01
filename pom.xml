@@ -13,6 +13,7 @@
         <module>Sensor2</module>
         <module>IoTGateway</module>
         <module>Service_Anbieter</module>
+        <module>Coordinator</module>
         <module>Database</module>
         <module>MQTT2UDPAdapter</module>
     </modules>
