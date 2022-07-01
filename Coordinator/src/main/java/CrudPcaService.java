@@ -15,11 +15,11 @@ public class CrudPcaService {
 
     public void create(Dataset newDataset) throws org.apache.thrift.TException, UnknownHostException;
 
-    public Dataset read(int primaryKey) throws org.apache.thrift.TException;
+    public Dataset read(int primaryKey) throws org.apache.thrift.TException, UnknownHostException;
 
-    public void update(Dataset updatedDataSet) throws org.apache.thrift.TException;
+    public void update(Dataset updatedDataSet) throws org.apache.thrift.TException, UnknownHostException;
 
-    public void remove(int primaryKey) throws org.apache.thrift.TException;
+    public void remove(int primaryKey) throws org.apache.thrift.TException, UnknownHostException;
 
     public boolean prepare(Dataset newDataset) throws org.apache.thrift.TException;
 
@@ -498,7 +498,11 @@ public class CrudPcaService {
 
       public create_result getResult(I iface, create_args args) throws org.apache.thrift.TException {
         create_result result = new create_result();
-        iface.create(args.newDataset);
+        try {
+          iface.create(args.newDataset);
+        } catch (UnknownHostException e) {
+          throw new RuntimeException(e);
+        }
         return result;
       }
     }
@@ -523,7 +527,11 @@ public class CrudPcaService {
 
       public read_result getResult(I iface, read_args args) throws org.apache.thrift.TException {
         read_result result = new read_result();
-        result.success = iface.read(args.primaryKey);
+        try {
+          result.success = iface.read(args.primaryKey);
+        } catch (UnknownHostException e) {
+          throw new RuntimeException(e);
+        }
         return result;
       }
     }
@@ -548,7 +556,11 @@ public class CrudPcaService {
 
       public update_result getResult(I iface, update_args args) throws org.apache.thrift.TException {
         update_result result = new update_result();
-        iface.update(args.updatedDataSet);
+        try {
+          iface.update(args.updatedDataSet);
+        } catch (UnknownHostException e) {
+          throw new RuntimeException(e);
+        }
         return result;
       }
     }
@@ -573,7 +585,11 @@ public class CrudPcaService {
 
       public remove_result getResult(I iface, remove_args args) throws org.apache.thrift.TException {
         remove_result result = new remove_result();
-        iface.remove(args.primaryKey);
+        try {
+          iface.remove(args.primaryKey);
+        } catch (UnknownHostException e) {
+          throw new RuntimeException(e);
+        }
         return result;
       }
     }

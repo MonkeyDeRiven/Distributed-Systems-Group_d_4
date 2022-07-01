@@ -137,6 +137,7 @@ services:
     container_name: server
     depends_on:
       - iotgateway
+      - coordinator
     build: ./Service_Anbieter
     volumes:
       - reportportal-data:/data
@@ -144,8 +145,7 @@ services:
 
   coordinator:
     container_name: coordinator
-    depends_on:
-        - server
+
     build: ./Coordinator
     environment:
       numberOfDatabase: 2

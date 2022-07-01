@@ -15,13 +15,12 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 
-class Database implements crudService.Iface{
+class Database implements CrudPcaService.Iface{
     //class for storing one db entry
 
     public static Dataset dataSetToProcess;
 
-    static crudService.Processor processor = new crudService.Processor(new Database());
-
+    static CrudPcaService.Processor processor = new CrudPcaService.Processor(new Database());
     public  int nextFreeId = 0;
 
     //Table for Datasets from sensors
@@ -30,6 +29,7 @@ class Database implements crudService.Iface{
 
 
     //API functions CRUD
+
     @Override
     public void create(Dataset newDataset) throws TException{
         //if is true when the given dataset does not exist already!
@@ -76,6 +76,45 @@ class Database implements crudService.Iface{
         System.out.println("Dataset was removed successfully!");
     }
 
+    @Override
+    public boolean prepare(Dataset newDataset) throws TException {
+        if(newDataset == null){
+            return false;
+        }
+        else if(read(newDataset.primaryKey) != null){
+            return false;
+        }
+        DBContentTemp.add(newDataset);
+        return true;
+    }
+
+    @Override
+    public void commit(int primaryKey) throws TException {
+        for(int i = 0; i< DBContentTemp.size(); i++){
+            if(primaryKey == DBContentTemp.get(i).primaryKey){
+                Dataset persistDataSet = new Dataset();
+                persistDataSet.timestamp = DBContentTemp.get(i).timestamp;
+                persistDataSet.primaryKey = DBContentTemp.get(i).primaryKey;
+                persistDataSet.sensorID= DBContentTemp.get(i).sensorID;
+                persistDataSet.sensorValue = DBContentTemp.get(i).sensorValue;
+                persistDataSet.valueType = DBContentTemp.get(i).valueType;
+
+                create(persistDataSet);
+
+                DBContentTemp.remove(i);
+            }
+        }
+    }
+
+    @Override
+    public void abort(int primaryKey) throws TException {
+
+        for(int i = 0; i <DBContentTemp.size(); i++){
+            if(primaryKey == DBContentTemp.get(i).primaryKey){
+                DBContentTemp.remove(i);
+            }
+        }
+    }
 
 
     public static void main(String[] args) throws InterruptedException, IOException, TTransportException {
