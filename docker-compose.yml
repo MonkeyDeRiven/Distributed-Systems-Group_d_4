@@ -147,6 +147,8 @@ services:
     depends_on:
         - server
     build: ./Coordinator
+    environment:
+      numberOfDatabase: 2
     volumes:
        - reportportal-data:/data
     restart: always

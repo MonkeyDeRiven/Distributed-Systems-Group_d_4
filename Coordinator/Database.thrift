@@ -1,4 +1,4 @@
-namespace java thrift.database.crud
+namespace java thrift.database.crud.pca
 
 typedef i32 int
 
@@ -10,7 +10,7 @@ struct Dataset{
     5: string timestamp;
 }
 
-service CrudService{
+service CrudPcaService{
     void create(1: Dataset newDataset);
     Dataset read(1: int primaryKey);
     void update(1: Dataset updatedDataSet);

@@ -114,7 +114,7 @@ public class HTTPHandler extends Thread{
 
         try {
             TTransport transport;
-            transport = new TSocket(InetAddress.getByName("db").toString().split("/")[1], 9090);
+            transport = new TSocket(InetAddress.getByName("coordinator").toString().split("/")[1], 9090);
             transport.open();
 
             TProtocol protocol = new TBinaryProtocol(transport);
