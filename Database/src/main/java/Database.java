@@ -26,6 +26,7 @@ class Database implements crudService.Iface{
 
     //Table for Datasets from sensors
     private ArrayList<Dataset> DBContent = new ArrayList();
+    private ArrayList<Dataset> DBContentTemp = new ArrayList();
 
 
     //API functions CRUD

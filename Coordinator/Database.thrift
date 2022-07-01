@@ -10,9 +10,13 @@ struct Dataset{
     5: string timestamp;
 }
 
-service crudService{
+service CrudService{
     void create(1: Dataset newDataset);
     Dataset read(1: int primaryKey);
     void update(1: Dataset updatedDataSet);
     void remove(1: int primaryKey);
+
+    bool prepare(1: Dataset newDataset);
+    void commit(1: int primaryKey);
+    void abort(1: int primaryKey);
 }

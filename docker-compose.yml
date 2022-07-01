@@ -142,10 +142,28 @@ services:
       - reportportal-data:/data
     restart: always
 
-  db:
-    container_name: db
+  coordinator:
+    container_name: coordinator
     depends_on:
-      - server
+        - server
+    build: ./Coordinator
+    volumes:
+       - reportportal-data:/data
+    restart: always
+
+  db1:
+    container_name: db1
+    depends_on:
+      - coordinator
+    build: ./Database
+    volumes:
+      - reportportal-data:/data
+    restart: always
+
+  db2:
+    container_name: db2
+    depends_on:
+     - coordinator
     build: ./Database
     volumes:
       - reportportal-data:/data
