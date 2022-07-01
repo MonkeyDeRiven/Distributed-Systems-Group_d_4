@@ -22,6 +22,7 @@ public class Adapter implements MqttCallback {
         MqttConnectOptions connOptions = new MqttConnectOptions();
         connOptions.setCleanSession(true);
         connOptions.setAutomaticReconnect(true);
+        //client.setCallback(this);
         iMqttMessageListener = new IMqttMessageListener() {
             @Override
             public void messageArrived(String s, MqttMessage mqttMessage) throws Exception {
