@@ -1,12 +1,16 @@
+import sun.jvm.hotspot.debugger.cdbg.Sym;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.ArrayList;
 
 class TCPThread extends Thread {
     String udpDatagram = "";
+    static ArrayList<Long> allRTT = new ArrayList<>();
 
     TCPThread(String udpDatagram) {
         this.udpDatagram = udpDatagram;
@@ -36,6 +40,7 @@ class TCPThread extends Thread {
             String requestMessage = "";
             requestMessage = createMessage("server", udpDatagram);
             System.out.println("Just connected to " + socket.getRemoteSocketAddress());
+            long startTime = System.currentTimeMillis();
             toServer.println(requestMessage);
 
             String httpRequest = "";
@@ -50,13 +55,34 @@ class TCPThread extends Thread {
                 }
                 i++;
             }
+
+            long endTime = System.currentTimeMillis();
+            long RTT = endTime - startTime;
+
+
             String messageArray[] =  errorMessage.split(" ");
 
             if(messageArray[1].equals("501")){
                 System.out.println("Communication is faulty");
             }
-            else
+            else {
                 System.out.println("Communication was successful");
+                allRTT.add(RTT);
+            }
+
+            if(allRTT.size() < 500) {
+                int arrSize = allRTT.size();
+                if (arrSize % 20 == 0) {
+                    double averageRTT = 0;
+                    for (int j = 0; j < arrSize; j++) {
+                        averageRTT += allRTT.get(j);
+                    }
+                    averageRTT = averageRTT / arrSize;
+                    allRTT.clear(); //prevent Heap from getting overloaded
+                    allRTT.add((long) averageRTT);
+                    System.out.println("Average RTT from " + arrSize + " meassures are: " + averageRTT);
+                }
+            }
 
         toServer.close();
         fromServer.close();

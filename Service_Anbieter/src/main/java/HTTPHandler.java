@@ -70,8 +70,9 @@ public class HTTPHandler extends Thread{
 
 
         responseMessage = createResponseMessage(messageBody != null);
-        toClient.println(responseMessage);
         sendDataToDatabase(messageBody);
+        toClient.println(responseMessage);
+
 
     }
 
@@ -97,7 +98,7 @@ public class HTTPHandler extends Thread{
         return response;
     }
 
-    private void sendDataToDatabase(String bodycontainsAsString) {
+    private boolean sendDataToDatabase(String bodycontainsAsString) {
 
         String contentList[] = bodycontainsAsString.split(",");
         Dataset newDataset = new Dataset();
@@ -117,7 +118,7 @@ public class HTTPHandler extends Thread{
             TProtocol protocol = new TBinaryProtocol(transport);
             crudService.Client client = new crudService.Client(protocol);
 
-            client.create(newDataset);
+            client.create(newDataset); //BOOLEAN RÜCKGABEWERT
             System.out.println("Dataset was send with RPC to Database");
             transport.close();
         } catch (TException x) {
@@ -125,5 +126,7 @@ public class HTTPHandler extends Thread{
         } catch (UnknownHostException e) {
             throw new RuntimeException(e);
         }
+
+        return true;
     }
 }

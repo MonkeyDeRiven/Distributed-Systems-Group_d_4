@@ -7,6 +7,8 @@
 import java.io.*;
 import java.net.*;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 import static java.lang.Thread.sleep;
 
@@ -40,6 +42,7 @@ class IoT {
     static final String GatewayIPAdr;
     static int messageIDForTCP = 0;
     static String sentence = "";
+
 
 
     static {
