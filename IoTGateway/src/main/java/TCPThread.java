@@ -72,7 +72,6 @@ class TCPThread extends Thread {
 
             if(allRTT.size() < 500) {
                 int arrSize = allRTT.size();
-                System.out.println("Arraysize is: " + arrSize);
                 if (arrSize % 20 == 0) {
                     double averageRTT = 0;
                     for (int j = 0; j < arrSize; j++) {
